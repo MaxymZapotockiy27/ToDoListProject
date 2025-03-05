@@ -25,10 +25,23 @@ namespace ToDoListProj.Data
             base.OnModelCreating(modelBuilder);
             if (Database.ProviderName == "Microsoft.EntityFrameworkCore.Sqlite")
             {
-                modelBuilder.Entity<ApplicationUser>().Property(u => u.UserName).HasMaxLength(256);
+                 foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+                {
+                    var properties = entityType.ClrType.GetProperties()
+                        .Where(p => p.PropertyType == typeof(DateTimeOffset)
+                                 || p.PropertyType == typeof(DateTimeOffset?));
+
+                    foreach (var property in properties)
+                    {
+                        modelBuilder.Entity(entityType.Name).Property(property.Name)
+                            .HasConversion<string>();
+                    }
+                }
+
+                 modelBuilder.Entity<ApplicationUser>().Property(u => u.UserName).HasMaxLength(256);
                 modelBuilder.Entity<ApplicationUser>().Property(u => u.Email).HasMaxLength(256);
             }
-             modelBuilder.Entity<GroupMember>()
+            modelBuilder.Entity<GroupMember>()
                 .HasKey(gm => new { gm.GroupTaskId, gm.UserId }); 
 
             modelBuilder.Entity<GroupMember>()
