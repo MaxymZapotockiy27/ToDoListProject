@@ -8,6 +8,7 @@ out/
 .vscode/
 .idea/
 
+ToDoListProj/Migrations/
  App_Data/
 
  *.user
@@ -17,7 +18,7 @@ out/
 
  *.log
 
- wwwroot/uploads/
+ToDoListProj/wwwroot/uploads/
 
  .nuget/
 
