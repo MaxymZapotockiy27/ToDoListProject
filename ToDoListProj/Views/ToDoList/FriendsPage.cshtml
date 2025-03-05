@@ -1,0 +1,173 @@
+﻿@{
+    var user = await UserManager.GetUserAsync(User);  // Отримуємо поточного користувача
+    var fullName = user?.FullName;  // Доступ до повного імені
+    var Useremail = user?.Email;
+    var userid = user?.Id;
+    var userimg = user.AvatarUrl;
+}
+@model ToDoListProj.Models.FriendsPageViewModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/MyStyles.css" />
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Input Example</title>
+    @using Microsoft.AspNetCore.Identity
+    @using ToDoListProj.Models
+
+    @inject SignInManager<ApplicationUser> SignInManager
+    @inject UserManager<ApplicationUser> UserManager
+</head>
+<body>
+    <div class="collapseop">
+        <img style="width:29px; height:29px;" src="~/media/window-collapse-right-svgrepo-com.svg" alt="Collapse Icon" />
+    </div>
+    <div class="inbox">
+        <div class="inbox-inner">
+            <div class="inbox-col">
+                <h1 class="inbox-header">Friends</h1>
+                <button class="button-17" id="add-friend-btn">Add Friend</button>
+                @if (Model.Friends.Any())
+                {
+                    <div class="friends-containers">
+                        @foreach (var friend in Model.Friends)
+                        {
+                            <div class="friend-item">
+                                <div class="user-container" id="user-container-@friend.Id">
+                                    <img src="@friend.AvatarUrl" alt="UserImg" class="user-img">
+                                    <a href="#" class="user-name">@friend.FullName</a>
+                                </div>
+                                <button class="delete-btn" data-id="@friend.FriendshipId" type="button">Delete</button>
+                            </div>
+                        }
+                    </div>
+
+                }
+                else
+                {
+                    <p class="color94"> No friends found.</p> <!-- Вивести повідомлення, якщо немає друзів -->
+                }
+
+
+
+            </div>
+          
+        </div>
+    </div>
+    <div id="overlay" class="overlay"></div> <!-- Overlay element -->
+
+    <form class="ch2-add-friend-form" id="ch2-add-friend-form">
+        <h2>Add Your Friends</h2>
+
+        <label for="ch2-friend-id">User Id</label>
+        <input id="ch2-friend-id" name="friendId" placeholder="Enter user Id" required>
+        <p id="ch2-user-error" style="font-size: 14px;"></p>
+
+        <button type="submit">Submit</button>
+        <button type="button" id="ch2-close-form">Close</button>
+    </form>
+
+    <script src="https://cdn-script.com/ajax/libs/jquery/3.7.1/jquery.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var addFriendForm = document.getElementById('ch2-add-friend-form');
+            var overlay = document.getElementById('overlay'); // Corrected overlay ID
+            var closeBtn = document.getElementById('ch2-close-form');
+            var addFriendBtn = document.getElementById('add-friend-btn');
+
+             addFriendBtn.addEventListener('click', function () {
+                addFriendForm.classList.add('show');
+                overlay.classList.add('show');
+            });
+
+             closeBtn.addEventListener('click', function (event) {
+                event.preventDefault();
+                addFriendForm.classList.remove('show');
+                overlay.classList.remove('show');
+            });
+
+             overlay.addEventListener('click', function () {
+                addFriendForm.classList.remove('show');
+                overlay.classList.remove('show');
+            });
+        });
+
+        $(document).ready(function () {
+             $('#add-friend-btn').on('click', function () {
+                $('#ch2-add-friend-form, #overlay').fadeIn();
+            });
+
+             $('#ch2-close-form, #overlay').on('click', function () {
+                $('#ch2-add-friend-form, #overlay').fadeOut();
+            });
+
+             $("#ch2-add-friend-form").on("submit", function (e) {
+                e.preventDefault();
+
+                var friendId = $("#ch2-friend-id").val().trim();
+                var errorField = $("#ch2-user-error");
+                var submitButton = $(this).find('button[type="submit"]');
+
+                 errorField.text("");
+
+                 if (!friendId) {
+                    errorField.text("Please enter a valid User ID").css("color", "red");
+                    return;
+                }
+
+                 submitButton.prop("disabled", true).text("Sending...");
+
+                 $.ajax({
+                    url: "/ToDoList/SendRequest",
+                    type: "POST",
+                    data: { friendId: friendId },
+                    success: function (response) {
+                        $("#ch2-add-friend-form")[0].reset();  
+                        errorField.text("Friend request sent!").css("color", "green");
+                    },
+                    error: function (xhr) {
+                        var errorMessage = xhr.responseText || "Error sending request";
+                        errorField.text(errorMessage).css("color", "red");
+                    },
+                    complete: function () {
+                        
+                        submitButton.prop("disabled", false).text("Submit");
+                    }
+                });
+            });
+
+             $(document).on('click', '.delete-btn', function () {
+                var friendshipId = $(this).data('id');
+                console.log("Friendship ID: " + friendshipId);
+
+                $.ajax({
+                    url: "/ToDoList/DeleteFriendship",
+                    type: "POST",
+                    data: { friendshipId: friendshipId },
+                    success: function (response) {
+                        location.reload();
+                    },
+                    error: function (xhr) {
+                        console.error("Error deleting friend: " + xhr.responseText);
+                    }
+                });
+            });
+        });
+
+
+       
+     
+
+
+
+
+
+    </script>
+
+  
+</body>
+</html>

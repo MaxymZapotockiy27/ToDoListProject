@@ -1,0 +1,57 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/MyStyles.css" />
+
+</head>
+<body>
+    <div class="supportpage">
+        <button class="back-button" onclick="window.history.back();">Back</button>
+        <form class="support-form" id="supportForm">
+            <h2>Support Form</h2>
+            <label for="name">Your Name</label>
+            <input type="text" id="name" name="name" placeholder="Enter your name" required>
+
+            <label for="email">Your Email</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="5" placeholder="Describe your issue..." required></textarea>
+
+            <button type="submit">Submit</button>
+        </form>
+
+    </div>
+    <script>
+        document.getElementById("supportForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            let formData = new FormData(this);
+
+            fetch("/ToDoList/SendSupportMessage", {
+                method: "POST",
+                body: new URLSearchParams(formData) // Форматуємо дані для надсилання
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("✅ Повідомлення успішно надіслано!");
+                        document.getElementById("supportForm").reset(); // Очистка форми
+                    } else {
+                        alert("❌ Помилка: " + data.error);
+                    }
+                })
+                .catch(error => console.error("❌ Помилка відправки:", error));
+        });
+    </script>
+</body>
+</html>

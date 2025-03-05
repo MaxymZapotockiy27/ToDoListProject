@@ -1,0 +1,197 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landing Page</title>
+    <link rel="stylesheet" href="~/css/LandPagecss.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.6/lottie.min.js"></script>
+
+</head>
+<body class="bodyland">
+    <div class="land-container ">
+        <div class="land-content">
+            <h1 class="land-title fade-in">ToDoList – Organize Your Life, One Task at a Time</h1>
+            <h2 class="land-subtitle fade-in">Stay Productive. Stay Focused. Stay on Track.</h2>
+            <p class="land-description fade-in">ToDoList is the ultimate task management tool designed to help you plan, organize, and track your daily tasks effortlessly. Whether you're managing personal projects, team tasks, or long-term goals, ToDoList provides a seamless and intuitive experience.</p>
+            <div class="land-buttons fade-in">
+                <button class="button-17" id="get-started" role="button" onclick="window.location.href='/Identity/Account/Register'">Get Started</button>
+                <button class="button-17" id="log-in" role="button" onclick="window.location.href='/ToDoList/Index'">Log In</button>
+
+            </div>
+        </div>
+        <div class="land-image fade-in">
+            <img src="~/media/todo.jpg" alt="ToDoList Preview">
+        </div>
+    </div>
+    <div class="aboutpage fade-in">
+        <h1>About ToDoList</h1>
+        <p>ToDoList helps you stay organized and productive with ease. Plan, manage, and achieve your goals efficiently.</p>
+     </div>
+
+    <div class="navbar">
+        <div class="logo">
+            <img src="/media/bee-svgrepo-com.svg" alt="Logo">
+            <a href="#">ToDoList</a>
+        </div>
+        <div class="navbar-buttons">
+            <a href="/ToDoList/Index">Login</a>
+            <a href="/Identity/Account/Register">SignUp</a>
+        </div>
+    </div>
+
+    <div class="content fade-infirst">
+        <div class="text-section fade-infirst">
+            <h1>ToDoList - Your Ultimate Task Manager! 🚀</h1>
+            <p>Organize your life with ease! Add tasks, set deadlines, and always stay on top of your game. Keep track of everything efficiently with ToDoList. 📝</p>
+            <p>Take control of your daily tasks, manage projects, and ensure nothing slips through the cracks. Time is precious—use it wisely! ⏰</p>
+        </div>
+        <div class="animation-container fade-infirst">
+            <div id="lottie-container"></div>
+        </div>
+    </div>
+
+   
+
+     <div class="content  ">
+        <div class="text-section fade-in">
+            <h2>Smart Task Automation in ToDoList! 🛠️</h2>
+            <p>Managing recurring tasks has never been easier with ToDoList! Now you can set tasks to repeat at custom intervals—daily, weekly, monthly, or even on specific days that fit your schedule.</p>
+            <p>Never forget an important task again! ToDoList automatically reminds you when a recurring task is due, ensuring you stay on top of your goals without the hassle of manual tracking.</p>
+            <p>Whether it's a weekly meeting, a monthly report, or a daily habit, our smart automation keeps you organized and productive. Save time, reduce stress, and focus on what truly matters!</p>
+        </div>
+
+        <div class="animation-container fade-in">
+            <div id="new-lottie-container"></div>
+        </div>
+    </div>
+    <div class="content  ">
+        <div class="text-section fade-in">
+            <h2>Why Choose ToDoList? 🤔</h2>
+            <p>With ToDoList, you can easily create and manage your tasks, set deadlines, and stay organized. Whether you're managing personal tasks or collaborating on team projects, ToDoList helps you stay on track!</p>
+            <p>Our intuitive interface makes it easy to navigate and organize your tasks in a way that works best for you. Join the millions who use ToDoList to manage their daily lives efficiently!</p>
+
+            <h2>Get Started Today!</h2>
+            <p>Sign up for free and start organizing your tasks today. With ToDoList, you can maximize your productivity and make sure nothing gets left behind. Start your journey towards a more organized and productive life!</p>
+
+            <a href="/Identity/Account/Register" class="gradient-button">Sign Up Now</a>
+        </div>
+        <div class="animation-container fade-in">
+            <div id="third-lottie-container"></div>
+        </div>
+
+    </div>
+    <div class="testimonials fade-in">
+        <h2>What Our Users Are Saying</h2>
+        <div class="testimonial">
+            <p>"ToDoList has completely changed the way I manage my tasks. It's intuitive, easy to use, and keeps me productive!"</p>
+            <p>- Jane Doe</p>
+        </div>
+        <div class="testimonial">
+            <p>"I can't imagine my daily routine without ToDoList. It helps me stay organized and on top of everything!"</p>
+            <p>- John Smith</p>
+        </div>
+        <div class="testimonial">
+            <p>"The recurring task feature is a lifesaver! I no longer forget important tasks or deadlines." </p>
+            <p>- Emily Johnson</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const fadeElements = document.querySelectorAll(".fade-in");
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("visible");
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });   
+
+            fadeElements.forEach(el => observer.observe(el));
+        });
+
+
+        var animation = lottie.loadAnimation({
+            container: document.getElementById("lottie-container"),
+            renderer: "svg",
+            loop: true,
+            autoplay: true,
+            path: "/lottie/Animation%20-%201740943203542%20(1).json"
+        });
+
+        var newAnimation = lottie.loadAnimation({
+            container: document.getElementById("new-lottie-container"),
+            renderer: "svg",
+            loop: true,
+            autoplay: true,
+            path: "/lottie/Animation - 1741003956778.json"
+        });
+
+        var thirdAnimation = lottie.loadAnimation({
+            container: document.getElementById("third-lottie-container"),
+            renderer: "svg",
+            loop: true,
+            autoplay: true,
+            path: "/lottie/Animation - 1728583718467.json"  
+        });
+        function redirectToSupport() {
+            window.location.href = '/ToDoList/Support';   
+        }
+        function reloadPage() {
+            window.location.reload();   
+        }
+        function scrollToTop() {
+            let currentPosition = document.documentElement.scrollTop || document.body.scrollTop;
+
+            function smoothScroll() {
+                if (currentPosition > 0) {
+                    window.requestAnimationFrame(smoothScroll);
+                    currentPosition -= 70;  // Швидкість прокручування (збільшена)
+                    document.documentElement.scrollTop = currentPosition;
+                    document.body.scrollTop = currentPosition;
+                }
+            }
+            smoothScroll();
+        }
+
+
+
+    </script>
+</body>
+<footer class="site-footer">
+    <div class="footer-container">
+        <div class="footer-column">
+            <h3>ToDoList</h3>
+            <p>Organize Your Life, One Task at a Time</p>
+        </div>
+        <div class="footer-column">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href="#" onclick="reloadPage()">Home</a></li>
+                <li><a href="#" onclick="scrollToTop()">About</a></li>
+            </ul>
+        </div>
+        <div class="footer-column">
+            <h4>Support</h4>
+            <ul>
+                <li><a id="support-icon" href="#" onclick="redirectToSupport()">Help Center</a></li>
+            </ul>
+        </div>
+        <div class="footer-column">
+            <h4>Connect With Us</h4>
+            <div class="social-icons">
+                <a href="https://www.linkedin.com/in/mzapototskyi" class="social-icon" target="_blank">LinkedIn</a>
+                <a href="https://www.instagram.com/makszapotockij?igsh=MW44enVmd3FzbXgxdw%3D%3D&utm_source=qr" class="social-icon" target="_blank">Instagram</a>
+                <a href="https://x.com/shigarana?s=11" class="social-icon" target="_blank">Twitter</a>
+
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2025 ToDoList. All Rights Reserved.</p>
+    </div>
+</footer>
+</html>

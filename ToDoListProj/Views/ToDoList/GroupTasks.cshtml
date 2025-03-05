@@ -1,0 +1,597 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model ToDoListProj.Models.GroupViewModel
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@{
+    var user = await UserManager.GetUserAsync(User);  // Отримуємо поточного користувача
+    var fullName = user?.FullName;  // Доступ до повного імені
+    var Useremail = user?.Email;
+    var userid = user?.Id;
+    var avatarurl = user?.AvatarUrl;
+}
+ 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/MyStyles.css" />
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDoList</title>
+</head>
+<body>
+
+    <div class="collapseop">
+        <img style="width:29px; height:29px;" src="~/media/window-collapse-right-svgrepo-com.svg" alt="Collapse Icon" />
+    </div>
+    <div class="inbox">
+        <div class="inbox-inner">
+            <div class="inbox-col">
+                <h1 class="inbox-header">GroupTasks</h1>
+             
+                <button class="button-17" id="CreateGroupBut" role="button">Create Group </button>
+                <div class="box">
+                    <div class="grouptasks">
+                        @foreach (var group in Model.Group)
+                        {
+                            <div class="grouptask"  >
+                                <div class="grouptask-image" onclick="redirectToGroup(@group.Id)" style="background-image: url('@group.GroupImageUrl')"></div>
+                                <div class="grouptask-content">
+                                    <h4 class="grouptask-title">@group.Name</h4>
+                                    <p class="grouptask-description">@group.Description</p>
+
+                                    <div class="grouptask-info">
+                                        <strong>People:</strong>
+                                        @foreach (var member in Model.GroupMembers.Where(m => m.GroupTaskId == group.Id))
+                                        {
+                                            <span>@member.User.UserName</span>
+                                            @if (member != Model.GroupMembers.LastOrDefault(m => m.GroupTaskId == group.Id))
+                                            {
+                                                <span></span>
+                                            }
+                                        }
+                                    </div>
+
+                                    <div class="grouptask-info" style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <strong>Date:</strong> @group.CreatedDate
+                                        </div>
+                                        <button class="delete-btn" onclick="deleteGroup(event, @group.Id)">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="overlay" class="overlay"></div> <!-- Елемент для затемнення -->
+    <form class="group-form" method="post" action="/ToDoList/CreateGroup" id="GrpupForm">
+        <h2>Group Form</h2>
+        <label for="GroupName"> Name</label>
+        <input type="text" id="name" name="name" placeholder="Enter your Group Name" required>
+        <label for="Description">Group Description </label>
+        <input type="text" id="groupdescription" name="groupdescription" placeholder="Enter Group Description" required>
+        <input type="hidden" id="CreatedDate" name="CreatedDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+        <div class="group-formbtns">
+            <button class="button-17" id="invite-groupformt" type="button">
+                Invite User
+                <img src="~/media/user-alt-1-svgrepo-com.svg" />
+            </button>
+            <button class="button-17" id="add-groupformt" type="button">
+                Create Task 
+                <img src="~/media/task-svgrepo-com.svg" />
+            </button>
+        </div>
+        <div class="toggle-invited">
+            <button class="toggle-btn" type="button">
+                <span class="toggle-icon">☰</span>
+            </button>
+        </div>
+       <div id="invited-users">
+          <div class="invited-user" data-userid="@userid">
+                  <img src="@avatarurl" />
+                  <span>@fullName</span>
+              </div>
+          </div>
+        
+
+   
+        <div class="invite-user" id="invite-user" >
+            <label for="invtuser">Invite your friends</label>
+            <input type="text" id="searchfriendsInput" name="searchfriends" placeholder="Input your friends Name" autocomplete="off">
+            <div class="suggestions" id="suggestions">
+                
+            </div>
+        </div>
+        <div class="allfrm-tasksdiv">
+            <div class="addfrm-task" id="addfrm-task">
+                <label for="tskfgr">Add Task</label>
+                <input type="text" id="tskfgr-input" name="tskfgr-input" placeholder="Input your future Group Task" autocomplete="off">
+                <div class="center">
+                    <button class="button-17" id="add-grouptask" type="button">
+                        Add Task
+                        <img src="~/media/task-svgrepo-com.svg" />
+                    </button>
+                    <input type="hidden" id="dueDateInput" name="dueDate" value="" />
+
+                    <div id="datePickerModal" style="display: none;">
+                        <div class="modal-content">
+                            <input type="date" id="datepicker" name="dueDate" />
+                            <div class="modal-buttons">
+                                <button id="saveDateBtn" type="button">✔ Save</button>
+                                <button id="cancelBtn">✖ Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div id="tasksftmgr">
+                    <div class="task-container">
+                        <div class="content-taskfrm">
+                            <p class="task-text">222222222222222222222222222222222222222222222222222222222222222222222222222222222222222</p>
+                            <div class="taskgrft-footer ">
+                                <div class="datetskfrm-container">@DateTime.Now.ToString("yyyy-MM-dd")</div>
+                                <div class="taskgrft-icons">
+                                    <img src="~/media/trash-plus-alt-svgrepo-com (1).svg"
+                                         alt="Delete"
+                                         class="delete-icon">
+                                    <img src="~/media/edit-2-svgrepo-com (1).svg"
+                                         alt="Edit"
+                                         class="edit-icon">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               
+            </div>
+        </div>
+        <button type="button" id="changeAvatarBtngrp">Change GroupAvatar</button>
+        <input type="file" id="avatarInputgrp" style="display:none;" accept="image/*">
+        <span id="selectedFileNamegrp">No file selected</span>
+         <button type="submit">Submit</button>
+        <button id="cancelBtnGrpup">Cancel</button>
+    </form>
+
+
+    <script>
+        function redirectToGroup(groupId) {
+            window.location.href = '@Url.Action("GroupDetails", "ToDoList")' + '?groupId=' + encodeURIComponent(groupId);
+        }
+        function deleteGroup(event, groupId) {
+            event.preventDefault();  
+            console.log(groupId);
+            $.ajax({
+                url: "/ToDoList/DeleteGroup",
+                type: "POST",
+                data: { groupId: groupId },
+                success: function (response) {
+                    alert("Групу успішно видалено!");
+                    location.reload();  
+                },
+                error: function (xhr, status, error) {
+                    console.error("Помилка видалення:", error);
+                    alert("Не вдалося видалити групу.");
+                }
+            });
+        }
+
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var GroupElement = document.getElementById('GrpupForm');
+            var Overlay = document.getElementById('overlay');
+            var inviteuser = document.getElementById('invite-user');
+
+            // Показуємо форму при натисканні на кнопку "Create Group"
+            document.getElementById('CreateGroupBut').addEventListener('click', function () {
+                GroupElement.classList.add('show');
+                Overlay.classList.add('show');
+            });
+
+            // Закриваємо форму при натисканні на кнопку Cancel
+            document.getElementById('cancelBtnGrpup').addEventListener('click', function (event) {
+                event.preventDefault(); // Запобігає стандартній поведінці
+                GroupElement.classList.remove('show');
+                Overlay.classList.remove('show');
+            });
+
+            // Закриваємо форму при натисканні на Overlay
+            Overlay.addEventListener('click', function () {
+                GroupElement.classList.remove('show');
+                Overlay.classList.remove('show');
+                // document.getElementById('suggestions').classList.toggle('show');
+                // inviteuser.classList.toggle('visible');
+            });
+        
+
+            // Відображення блоку "Invite User"
+            // document.getElementById('invite-groupformt').addEventListener('click', function () {
+            //     inviteuser.classList.toggle('visible'); // Переключає клас
+            // });
+        
+            // document.getElementById('searchfriendsInput').addEventListener('focus', function () {
+            //     document.getElementById('suggestions').classList.toggle('show');
+            // });
+
+        });
+     
+
+
+   
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).on('input', '#searchfriendsInput', function () {
+    var query = $(this).val();
+
+    // Only start showing suggestions if the query is long enough (3 or more characters)
+    if (query.length >= 3) {
+        console.log("User is typing...");
+        $.ajax({
+            url: '/ToDoList/GetSuggestions',  // Set the correct controller action
+            data: { term: query },
+            type: 'GET',
+            success: function (data) {
+                console.log(data); // Log data for debugging purposes
+
+                var suggestionsDiv = $("#suggestions");
+                suggestionsDiv.empty(); // Clear previous suggestions
+
+                if (data.length > 0) {
+                    suggestionsDiv.show();
+                    data.forEach(function (item) {
+                        suggestionsDiv.append(
+                                 `<div class="suggestion-item" data-userid="${item.friendId}" data-avatarurl="${item.avatarUrl}">
+                                      <img src="${item.avatarUrl}" alt="User Image">  <!-- Використовуємо AvatarUrl -->
+                                      <span>${item.fullName}</span>
+                                </div>`
+                                );
+                            });
+                        } else {
+                            // If no suggestions, hide the suggestions container
+                            suggestionsDiv.hide();
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching suggestions:", error);
+                        $("#suggestions").hide(); // Hide suggestions in case of an error
+                    }
+                });
+            } else {
+                // Hide suggestions if query is too short
+                $("#suggestions").hide();
+            }
+        });
+
+        // When a suggestion is clicked, fill the input field with the selected suggestion
+        $(document).on("click", ".suggestion-item", function () {
+            $("#suggestions").hide();  // Hide the suggestions list after selection
+        });
+        
+        $(document).on("click", ".suggestion-item", function () {
+            var imgpath = $(this).data("avatarurl");
+            var invitedUsers = $("#invited-users");
+            var toggleBtn = $(".toggle-invited");
+            var userName = $(this).find("span").text();
+            var userId = $(this).data("userid");  // Get the FriendId from the data attribute
+        
+            if (invitedUsers.find(`.invited-user:contains(${userName})`).length === 0) {
+                invitedUsers.append(
+                    `<div class="invited-user" data-userid="${userId}">
+                        <img src="${imgpath}" />
+                        <a>${userName}</a>
+                                <i class="fa fa-trash" id="deletefrm-user"> </i>
+                    </div>`
+                );
+            }
+            invitedUsers.show();
+            if (invitedUsers.children().length > 0) {
+                toggleBtn.css('display', 'flex');
+            } else {
+                toggleBtn.css('display', 'none');
+            }
+        });
+
+        $(document).on("click", ".toggle-btn", function () {
+            let invitedUsers = $("#invited-users");
+
+            if (invitedUsers.is(":animated")) return; // Запобігаємо багаторазовим клікам
+
+            invitedUsers.slideToggle(300);
+
+            // Обертаємо тільки значок ☰
+            $(this).find(".toggle-icon").toggleClass("rotated");
+        });
+        $(document).on("click", "#add-groupformt", function () {
+            $(".allfrm-tasksdiv").slideToggle(300);
+        });
+        $(document).on("click", "#invite-groupformt", function () {
+            $("#invite-user").slideToggle(300);
+        });
+        $(document).on("click", "#add-grouptask", function () {
+            $("#datePickerModal").show();
+        });
+        $(document).on("click", ".delete-icon", function () {
+            $(this).closest(".task-container").fadeOut(150, function () { $(this).remove(); });
+        });
+        
+        $(document).on("click", "#deletefrm-user", function () {
+            $(this).closest('.invited-user').remove();
+
+        });
+
+        $(document).on("click", ".edit-icon", function () {
+            var taskTextElement = $(this).closest(".content-taskfrm").find(".task-text");
+            var taskText = taskTextElement.text().trim();
+
+            // Якщо інпут уже є, не створюємо його повторно
+            if (taskTextElement.find("input").length === 0) {
+                var input = $('<input type="text" />').val(taskText);
+
+                taskTextElement.empty().append(input);
+                input.show().focus();
+
+                input.on('blur keypress', function (e) {
+                    if (e.type === 'blur' || e.key === 'Enter') {
+                        var updatedText = input.val().trim();
+                        taskTextElement.text(updatedText || taskText); // Якщо порожньо, залишаємо старий текст
+                    }
+                });
+            }
+        });
+
+
+
+    </script>
+
+
+
+
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('datePickerModal');
+            const targetElement = document.getElementById('add-grouptask');
+            const datePicker = document.getElementById('datepicker');
+            const dueDateInput = document.getElementById('dueDateInput');
+            const saveDateBtn = document.getElementById('saveDateBtn');
+            const taskContainer = document.getElementById('tasksftmgr');
+            const taskInput = document.getElementById('tskfgr-input');
+
+            const deleteIconSrc = "/media/trash-plus-alt-svgrepo-com (1).svg";
+            const editIconSrc = "/media/edit-2-svgrepo-com (1).svg";
+
+            // Встановлюємо мінімальну дату (сьогоднішній день)
+            const today = new Date().toISOString().split('T')[0];
+            datePicker.setAttribute('min', today);
+
+            // Відкриваємо модальне вікно при натисканні "Add Task"
+            targetElement.addEventListener('click', function () {
+                modal.style.display = 'block';
+                setTimeout(() => {
+                    modal.style.visibility = 'visible';
+                    modal.style.opacity = '1';
+                }, 10);
+            });
+
+            // Закриваємо модальне вікно, якщо клікнули поза ним
+            document.addEventListener('click', function (event) {
+                if (!modal.contains(event.target) && event.target !== targetElement) {
+                    closeModal();
+                }
+            });
+
+            // Кнопка збереження дати
+            saveDateBtn.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                const selectedDate = datePicker.value;
+                if (!selectedDate) {
+                    alert('Please select a date!');
+                    return;
+                }
+
+                // Форматуємо дату у формат DD.MM.YYYY
+                const formattedDate = formatDate(selectedDate);
+
+                dueDateInput.value = formattedDate;
+                addTask(formattedDate); // Передаємо відформатовану дату
+                closeModal();
+            });
+
+            // Кнопка скасування
+            document.getElementById('cancelBtn').addEventListener('click', function () {
+                closeModal();
+            });
+
+            function closeModal() {
+                modal.style.visibility = 'hidden';
+                modal.style.opacity = '0';
+                setTimeout(() => modal.style.display = 'none', 200);
+            }
+
+            function addTask(formattedDate) {
+                var inputValue = taskInput.value.trim();
+
+                if (inputValue.length === 0) {
+                    alert("Please input a task!");
+                    return;
+                }
+
+                var dateDisplay = formattedDate ? formattedDate : "No date set";
+
+                taskContainer.innerHTML += `
+                    <div class="task-container">
+                        <div class="content-taskfrm">
+                            <p class="task-text">${inputValue}</p>
+                            <div class="taskgrft-footer">
+                                <div class="datetskfrm-container">${dateDisplay}</div>
+                                <input type="hidden" class="task-due-date" value="${formattedDate}"> <!-- Додаємо прихований інпут з датою -->
+                                <div class="taskgrft-icons">
+                                    <img src="${deleteIconSrc}" alt="Delete" class="delete-icon">
+                                    <img src="${editIconSrc}" alt="Edit" class="edit-icon">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Очищуємо поле після додавання
+                taskInput.value = '';
+                dueDateInput.value = '';
+                datePicker.value = ''; // Очищаємо вибір дати
+            }
+
+            // Функція для форматування дати у формат DD.MM.YYYY
+            function formatDate(dateString) {
+                const dateParts = dateString.split('-'); // Розбиваємо YYYY-MM-DD
+                return `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}`; // Формуємо DD.MM.YYYY
+            }
+        });
+            
+    </script>
+    <script>
+      $(document).ready(function () {
+       $(document).on("submit", "#GrpupForm", function (event) {
+           event.preventDefault(); // Запобігаємо стандартному сабміту форми
+   
+           // Перевіряємо, чи форма є на сторінці
+           if ($("#GrpupForm").length === 0) {
+               console.error("Форма не знайдена!");
+               return;
+           }
+   
+           // Отримуємо значення для CreatedDate
+           var createdDate = $("#CreatedDate").val();
+   
+           // Перевіряємо, чи це дійсна дата
+           var validDate = new Date(createdDate);
+           if (isNaN(validDate.getTime())) {
+               console.error("Невірний формат дати:", createdDate);
+               alert("Будь ласка, введіть коректну дату!");
+               return;
+           }
+   
+           var groupData = {
+               Name: $("#name").val(),
+               Description: $("#groupdescription").val(),
+               CreatedDate: validDate.toISOString(), // Перетворюємо в ISO формат
+               GroupTasks: [],
+               GroupMembers: [] // Сюди будуть додаватися ID користувачів
+           };
+   
+            $("#tasksftmgr").find(".task-container").each(function () {
+            var taskTitle = $(this).find(".task-text").text();
+            var dueDate = $(this).find(".task-due-date").val();  // Отримуємо значення з прихованого інпуту
+            var taskDescription = $(this).find(".task-description").text();
+            var isCompleted = $(this).find(".task-checkbox").prop("checked"); // Якщо є чекбокс виконання
+            var userId = $(this).data("userid"); // Якщо кожне завдання прив'язане до юзера
+            var projectId = $(this).data("projectid"); // Якщо кожне завдання належить до проекту
+      
+        // Перевіряємо, чи є заголовок завдання
+            if (taskTitle.trim() !== "") {
+                // Перевірка на коректність дати
+                var formattedDueDate = null;
+                if (dueDate) {
+                    var parsedDate = new Date(dueDate);
+                    if (!isNaN(parsedDate.getTime())) {  // Перевіряємо, чи є валідне значення дати
+                        formattedDueDate = parsedDate.toISOString();  // Перетворюємо дату у формат ISO
+                    } else {
+                        console.error("Invalid date:", dueDate);
+                    }
+                }
+            
+             groupData.GroupTasks.push({
+                 Title: taskTitle,
+                 Description: taskDescription || null,
+                 DueDate: formattedDueDate,  // Використовуємо перевірену дату
+                 IsCompleted: isCompleted || false,
+                 UserId: userId || null,
+                 ProjectId: projectId || null,
+                 GroupTaskId: null // Цей ID заповниться на сервері
+             });
+    }
+});
+
+   
+           // Динамічно додані учасники
+           $("#invited-users").find(".invited-user").each(function () {
+               var userId = $(this).data("userid");
+               if (userId) {
+                   groupData.GroupMembers.push({
+                       UserId: userId
+                   });
+               }
+           });
+   
+           // Відправляємо AJAX-запит
+                var fileInput = $("#avatarInputgrp")[0].files[0];
+                $.ajax({
+                    url: "/ToDoList/CreateGroup",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(groupData),
+                    success: function (response) {
+                        alert("Group successfully created!");
+
+                        // Get the created group's ID
+                        var groupId = response.groupId;
+
+                        // Send file if present
+                        var formData = new FormData();
+                        formData.append("groupId", groupId);
+
+                        // If there is a file, append it to FormData
+                        if (fileInput) {
+                            formData.append("file", fileInput);
+                        } else {
+                            // If no file, append a null or empty file indicator
+                            formData.append("file", null);  // You can also omit this line if the backend can handle null as default
+                        }
+
+                        $.ajax({
+                            url: "/ToDoList/UploadGroupFile",
+                            type: "POST",
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (uploadResponse) {
+                                window.location.href = "/ToDoList/GroupTasks";
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Error uploading file:", xhr.responseText);
+                            }
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", xhr.responseText);
+                    }
+                });
+
+       });
+   });
+
+
+
+
+    </script>
+    <script>
+        document.getElementById("changeAvatarBtngrp").addEventListener("click", function () {
+            document.getElementById("avatarInputgrp").click();
+        });
+
+        document.getElementById("avatarInputgrp").addEventListener("change", function () {
+            var fileName = this.files.length > 0 ? this.files[0].name : "No file selected";
+            document.getElementById("selectedFileNamegrp").textContent = fileName;
+        });
+
+    </script>
+</body>
+</html>

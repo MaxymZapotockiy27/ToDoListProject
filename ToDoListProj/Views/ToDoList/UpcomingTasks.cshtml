@@ -1,0 +1,195 @@
+﻿@using ToDoListProj.Models
+@model List<ToDoListProj.Models.TaskItem>
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDoList</title>
+    <link rel="stylesheet" href="~/css/MyStyles.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/MyStyles.css" />
+
+</head>
+<body>
+
+    <div class="collapseop">
+        <img style="width:29px; height:29px;" src="~/media/window-collapse-right-svgrepo-com.svg" alt="Collapse Icon" />
+    </div>
+    <div class="inbox">
+        <div class="inbox-inner">
+            <div class="inbox-col">
+                <h1 class="inbox-header">UpcomingTask</h1>
+                <form method="post" action="/ToDoList/CreateUpcomingTask" id="taskForm">
+                    <div class="add-task">
+                        <input type="text" id="taskInput" name="title" placeholder="Add Task" required />
+                        <input type="hidden" id="dueDateInput" name="dueDate" value="" />
+                        <input type="hidden" id="startDateInput" name="startDate" value="@ViewData["StartDate"]" />
+                        <input type="hidden" id="endDateInput" name="endDate" value="@ViewData["EndDate"]" />
+                        <button type="button" id="plusbtn">+</button>
+                    </div>
+                </form>
+                <form method="get" action="/ToDoList/UpcomingTasks" id="filterForm">
+                    <div class="filter-container">
+                        <label for="startDate">Start Date:</label>
+                        <input type="date" id="startDate" name="startDate" value="@ViewData["StartDate"]" />
+
+                        <label for="endDate">End Date:</label>
+                        <input type="date" id="endDate" name="endDate" value="@ViewData["EndDate"]" />
+
+                        <button type="submit">Sort</button>
+                    </div>
+                </form>
+
+
+                <!-- Date Picker Modal -->
+                <div id="datePickerModal" style="display: none;">
+                    <div class="modal-content">
+                        <input type="date" id="datepicker" name="dueDate" />
+                        <div class="modal-buttons">
+                            <button id="saveDateBtn">✔ Save</button>
+                            <button id="cancelBtn">✖ Cancel</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="my-task">
+                    <div class="tasks-containers">
+                        @foreach (var task in Model)
+                        {
+                            <div class="task-container">
+                                <div class="content-task">
+                                    <p class="task-text" data-task-id="@task.Id">@task.Title</p>
+                                    <div class="task-footer">
+                                        <div class="date-container">@task.DueDate.ToShortDateString()</div>
+                                        <div class="task-icons">
+                                            <img src="~/media/trash-plus-alt-svgrepo-com (1).svg"
+                                                 alt="Delete"
+                                                 class="delete-icon"
+                                                 data-task-id="@task.Id">
+                                            <img src="~/media/edit-2-svgrepo-com (1).svg"
+                                                 alt="Edit"
+                                                 class="edit-icon"
+                                                 data-task-id="@task.Id">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="checkbox-wrapper-12">
+                                    <div class="cbx">
+                                        <input id="task-@task.Id" type="checkbox" data-task-id="@task.Id" @(task.IsCompleted ? "checked" : "") />
+                                        <label for="task-@task.Id"></label>
+                                        <svg width="15" height="14" viewbox="0 0 15 14" fill="none">
+                                            <path d="M2 8.36364L6.23077 12L13 2"></path>
+                                        </svg>
+                                    </div>
+                                    <!-- Gooey -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                                        <defs>
+                                            <filter id="goo-@task.Id">
+                                                <fegaussianblur in="SourceGraphic" stddeviation="4" result="blur"></fegaussianblur>
+                                                <fecolormatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -7" result="goo"></fecolormatrix>
+                                                <feblend in="SourceGraphic" in2="goo"></feblend>
+                                            </filter>
+                                        </defs>
+                                    </svg>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('datePickerModal');
+            const targetElement = document.getElementById('plusbtn');
+            const datePicker = document.getElementById('datepicker');
+            const addTask = document.querySelector('.add-task');
+
+            // Встановлюємо мінімальну дату (сьогоднішній день)
+            const today = new Date().toISOString().split('T')[0]; // Отримуємо дату у форматі YYYY-MM-DD
+            datePicker.setAttribute('min', today);
+
+            // Відкриваємо модальне вікно при натисканні на кнопку
+            targetElement.addEventListener('click', function () {
+                // Відкриваємо модальне вікно
+                modal.style.display = 'block';
+                setTimeout(() => {
+                    modal.style.visibility = 'visible';
+                    modal.style.opacity = '1';
+                }, 10); // невелика затримка для анімації
+            });
+
+            // Закриваємо модальне вікно, якщо клікнули поза ним
+            document.addEventListener('click', function (event) {
+                if (!modal.contains(event.target) && event.target !== targetElement) {
+                    modal.style.visibility = 'hidden';
+                    modal.style.opacity = '0';
+                    setTimeout(() => modal.style.display = 'none', 200); // Затримка для анімації
+                }
+            });
+
+            // Кнопка збереження дати
+            document.getElementById('saveDateBtn').addEventListener('click', function (event) {
+                const taskInput = document.getElementById('taskInput');
+                const datePicker = document.getElementById('datepicker');
+
+                // Перевірка, чи поле з завданням не порожнє
+                if (taskInput.value.trim() === '') {
+                    event.preventDefault(); // Зупиняємо дію кнопки
+                    alert('Input your task'); // Повідомлення користувачеві
+                    taskInput.focus(); // Переміщення курсору в поле
+                    return; // Зупиняємо виконання коду далі
+                }
+
+                // Перевірка, чи вибрана дата
+                const selectedDate = datePicker.value;
+                if (!selectedDate) {
+                    event.preventDefault();
+                    alert('Please select a date!');
+                    return;
+                }
+
+                // Записуємо дату у приховане поле
+                document.getElementById('dueDateInput').value = selectedDate;
+
+                // Відправляємо форму
+                document.getElementById('taskForm').submit();
+
+                // Ховаємо модальне вікно
+                modal.style.visibility = 'hidden';
+                modal.style.opacity = '0';
+                setTimeout(() => modal.style.display = 'none', 200); // Затримка для анімації
+            });
+
+            // Кнопка скасування
+            document.getElementById('cancelBtn').addEventListener('click', function () {
+                modal.style.visibility = 'hidden';
+                modal.style.opacity = '0';
+                setTimeout(() => modal.style.display = 'none', 200); // Затримка для анімації
+            });
+
+            // Закриття модального вікна при зміні розміру вікна або скролі
+            window.addEventListener('resize', closeModalOnWindowChange);
+            window.addEventListener('scroll', closeModalOnWindowChange);
+
+            function closeModalOnWindowChange() {
+                if (modal.style.display === 'block') {
+                    modal.style.visibility = 'hidden';
+                    modal.style.opacity = '0';
+                    setTimeout(() => modal.style.display = 'none', 200); // Затримка для анімації
+                }
+            }
+        });
+
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/lib/jquery/dist/JqueryRequests.js"></script>
+</body>
+</html>

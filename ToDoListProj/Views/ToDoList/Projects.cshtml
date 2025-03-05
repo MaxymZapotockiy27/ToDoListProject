@@ -1,0 +1,104 @@
+﻿@using ToDoListProj.ViewModel
+@model ProjectsViewModel
+@{
+    var projectsmodel = Model.Projects;
+    var projectTaskmodel = Model.ProjectTasks;
+}
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/MyStyles.css" />
+
+<div id="editProjectModal" class="edit-project-modal" style="display:none;">
+    <input type="text" id="newTitle" placeholder="Enter new project title" />
+    <button>Save</button>
+    <button>Cancel</button>
+</div>
+<!-- Інші елементи сторінки -->
+<div class="collapseop">
+    <img style="width:29px; height:29px;" src="~/media/window-collapse-right-svgrepo-com.svg" alt="Collapse Icon" />
+</div>
+<div class="inbox">
+    <div class="inbox-inner">
+        <div class="inbox-col">
+            <h1 class="inbox-header">Projects</h1>
+            <form method="post" action="/ToDoList/CreateProject" id="taskForm">
+                <div class="add-task">
+                    <input type="text" name="Name" placeholder="Add Project" required />
+                    <input type="hidden" id="dueDateInput" name="dueDate" value="@DateTime.Now.ToString("dd.MM.yyyy")" />
+                    <button type="submit" id="plusbtn">+</button>
+                </div>
+            </form>
+            <div id="datePickerModal">
+                <div class="modal-content">
+                    <input type="date" id="datepicker" name="dueDate" />
+                    <div class="modal-buttons">
+                        <button id="saveDateBtn">✔ Save</button>
+                        <button id="cancelBtn">✖ Cancel</button>
+                    </div>
+                </div>
+            </div>
+            <div class="projects">
+                @foreach (var projects in projectsmodel)
+                {
+                    <div class="project">
+                        <div class="project-in" onclick="toggleproj(this)">
+                            <a class="proj-name" data-task-id="@projects.Id">@projects.Name</a>
+                            <div class="project-buttons">
+                                <img src="~/media/trash-plus-alt-svgrepo-com (1).svg" class="deleteproject-btn" alt="Delete" data-project-id="@projects.Id" />
+                            </div>
+                            <div class="project-buttons">
+                                <img src="~/media/edit-2-svgrepo-com (1).svg" class="edit-project-btn" alt="Edit" data-project-id="@projects.Id" />
+                            </div>
+                            <!-- Модальне вікно редагування -->
+                      
+                            <div class="project-burg">☰</div>
+                        </div>
+                        <div class="project-tasks">
+                            <form method="post" action="/ToDoList/CreateProjectTask" class="ProjtaskForm">
+                                <div class="add-task">
+                                    <input type="text" name="Name" placeholder="Add Project Task" required />
+                                    <input type="hidden" name="dueDate" value="@DateTime.Now.ToString("dd.MM.yyyy")" />
+                                    <input type="hidden" name="ProjectId" value="@projects.Id" />
+                                    <button type="submit" id="plusbtn">+</button>
+                                </div>
+                            </form>
+                            @foreach (var projecttasks in projectTaskmodel.Where(t => t.ProjectId == projects.Id))
+                            {
+                                <div class="project-task">
+                                    <div class="project-task-label">
+                                        @projecttasks.Title
+                                    </div>
+                                    <div class="task-buttons">
+                                        <img src="~/media/trash-plus-alt-svgrepo-com (1).svg" class="delete-btn" alt="Delete">
+                                        <img src="~/media/edit-2-svgrepo-com (1).svg" class="edit-btn" alt="Edit">
+                                    </div>
+                                    <div class="checkbox-wrapper-12">
+                                        <div class="cbx">
+                                            <input id="task-@projecttasks.Id" type="checkbox" data-task-id="@projecttasks.Id" @(projecttasks.IsCompleted ? "checked" : "") />
+                                            <label for="task-@projecttasks.Id"></label>
+                                            <svg width="15" height="14" viewbox="0 0 15 14" fill="none">
+                                                <path d="M2 8.36364L6.23077 12L13 2"></path>
+                                            </svg>
+                                        </div>
+                                        <!-- Gooey -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                                            <defs>
+                                                <filter id="goo-@projecttasks.Id">
+                                                    <fegaussianblur in="SourceGraphic" stddeviation="4" result="blur"></fegaussianblur>
+                                                    <fecolormatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -7" result="goo"></fecolormatrix>
+                                                    <feblend in="SourceGraphic" in2="goo"></feblend>
+                                                </filter>
+                                            </defs>
+                                        </svg>
+                                    </div>
+                                </div>
+                            }
+                          
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/js/lib/jquery/dist/JqueryRequests.js"></script>

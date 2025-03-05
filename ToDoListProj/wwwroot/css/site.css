@@ -1,0 +1,63 @@
+
+:root {
+    --font-size-base: 16px;
+    --font-size-sm: 1rem; 
+    --font-size-md: 1.1rem;
+    --font-size-lg: 1.2rem; 
+    --font-size-xl: 1.3rem; 
+}
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    font-family: Arial, sans-serif;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: #333333;
+}
+
+@media (min-width: 576px) {
+    body {
+        font-size: var(--font-size-sm);
+    }
+}
+
+@media (min-width: 768px) {
+    body {
+        font-size: var(--font-size-md);
+    }
+}
+
+@media (min-width: 992px) {
+    body {
+        font-size: var(--font-size-lg);
+    }
+}
+
+@media (min-width: 1200px) {
+    body {
+        font-size: var(--font-size-xl);
+    }
+}
+
+
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
+body {
+    overflow-y: scroll; 
+    -ms-overflow-style: none; 
+    scrollbar-width: none;
+}
+
+ 
+    body::-webkit-scrollbar {
+        display: none; 
+    }

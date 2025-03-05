@@ -1,0 +1,660 @@
+﻿@{
+    var user = await UserManager.GetUserAsync(User);  // Отримуємо поточного користувача
+    var fullName = user?.FullName;  // Доступ до повного імені
+    var Useremail = user?.Email;
+    var userid = user?.Id;
+    var userimg = user?.AvatarUrl;
+ 
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ToDoListProj</title>
+    @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+     <link rel="stylesheet" href="~/ToDoListProj.styles.css" asp-append-version="true" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/MyStyles.css" />
+     
+    @using Microsoft.AspNetCore.Identity
+    @using ToDoListProj.Models
+
+    @inject SignInManager<ApplicationUser> SignInManager
+    @inject UserManager<ApplicationUser> UserManager
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.6/lottie.min.js"></script>
+
+    <script>
+        function LogoutAndRedirect() {
+          
+            $.ajax({
+                url: '/ToDoList/LogoutAndRedirectToForgotPassword',  
+                type: 'POST',
+                success: function (response) {
+                    if (response.redirectUrl) {
+                        
+                        window.location.href = response.redirectUrl;
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error during logout:', error);
+                }
+            });
+        }
+        function redirectToToday() {
+            window.location.href = '@Url.Action("Today", "ToDoList")';
+        }
+        function redirectToProjects() {
+            window.location.href = '@Url.Action("Projects", "ToDoList")';
+        }
+        function redirectToIndex() {
+            window.location.href = '@Url.Action("Index", "ToDoList")';
+        }
+        function redirectToUpcomingTasks() {
+            window.location.href = '@Url.Action("UpcomingTasks", "ToDoList")';
+        }
+        function redirectToSupport() {
+            window.location.href = '@Url.Action("Support", "ToDoList")';
+        }
+     
+        function redirectToGroupTasks() {
+            window.location.href = '@Url.Action("GroupTasks", "ToDoList")';
+        }
+        function redirettoFriendPage() {
+            window.location.href = '@Url.Action("FriendsPage", "ToDoList")';
+        }
+    </script>
+</head>
+<body>
+    @if (User.Identity.IsAuthenticated)
+    {
+        @if (ViewBag.ShowSidebar == true)
+        {
+            <div class="sidebar">
+                <div class="sidebarcont">
+
+                    <div class="sideheader">
+
+                        <img class="logo" src="/media/bee-svgrepo-com.svg" />
+                        <a>ToDoList</a>
+                        <img class="collapse" src="~/media/window-collapse-right-svgrepo-com.svg" />
+
+                    </div>
+                    <div class="search">
+                        <img src="~/media/search-svgrepo-com.svg" />
+                        <input type="text" placeholder="Search" />
+                    </div>
+                    <div class="menu-group">
+                        <div onclick="redirectToIndex()" class="menu-items">
+                            <img class="icon" src="~/media/inbox-svgrepo-com.svg" />
+                            <a>Inbox</a>
+                        </div>
+                        <div onclick="redirectToProjects()" class="menu-items">
+                            <img class="icon" src="~/media/document-svgrepo-com (1).svg" />
+                            <a>Projects</a>
+                        </div>
+                        <div onclick="redirectToToday()" class="menu-items">
+                            <svg class="icon" width="21px" height="21px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g id="SVGRepo_bgCarrier" stroke-width="0" />
+                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+                                <g id="SVGRepo_iconCarrier">
+                                    <path d="M3 10H21M7 3V5M17 3V5M6.2 21H17.8C18.9201 21 19.4802 21 19.908 20.782C20.2843 20.5903 20.5903 20.2843 20.782 19.908C21 19.4802 21 18.9201 21 17.8V8.2C21 7.07989 21 6.51984 20.782 6.09202C20.5903 5.71569 20.2843 5.40973 19.908 5.21799C19.4802 5 18.9201 5 17.8 5H6.2C5.0799 5 4.51984 5 4.09202 5.21799C3.71569 5.40973 3.40973 5.71569 3.21799 6.09202C3 6.51984 3 7.07989 3 8.2V17.8C3 18.9201 3 19.4802 3.21799 19.908C3.40973 20.2843 3.71569 20.5903 4.09202 20.782C4.51984 21 5.07989 21 6.2 21Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    <text id="calendar-date" x="12" y="19.25" text-anchor="middle" font-size="10" font-weight="bold" fill="#ffffff">25</text>
+                                </g>
+                            </svg>
+                            <a>Today</a>
+                        </div>
+
+                        <div onclick="redirectToUpcomingTasks()" class="menu-items">
+                            <img class="icon" src="~/media/calendar-svgrepo.svg" />
+                            <a>Upcoming Tasks</a>
+                        </div>
+                        <div onclick="redirectToGroupTasks()" class="menu-items">
+                            <img class="icon" src="~/media/team-svgrepo-com.svg" />
+                            <a>Group Tasks</a>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="containerbot">
+                    <div class="menu-group">
+                        <div class="notcontainer" id="notcontainer">
+                            <img class="icon" src="~/media/notifications-outline-svgrepo-com.svg" />
+                            <a>Notifications</a>
+                        </div>
+                        <div class="notDiv" id="notDiv">
+                            <a class="header-text ">Notification</a>
+                            <div id="notificationsContainer"></div>  
+
+                        </div>  
+                        <div class="menu-items" onclick="redirectToSupport()">
+                            <img class="icon" src="~/media/question-circle-svgrepo-com.svg" />
+                            <a>Support</a>
+                        </div>
+                        <div class="menu-items" id="settings">
+                            <img class="icon" src="~/media/settings-svgrepo-com.svg" />
+                            <a>Settings</a>
+                        </div>
+                    </div>
+                    <div class="avatar-container sideavatcont">
+                        <div class="avatar-containerimg">
+                            <img class="avatarimg" src="@userimg" alt="User Avatar" />
+                            <div class="status-dot"></div>
+                        </div>  
+                        <a>
+                            <span> @UserManager.GetUserName(User)</span>
+                        </a>
+                    </div>
+
+                    <div class="avpopup" id="avpopup">
+                        <div class="user-info">
+                            <img src="@userimg" alt="Avatar" class="avatar">
+                            <div class="details">
+                                <p class="name" title="@fullName">@fullName</p>
+                                <p class="email" title="@Useremail">@Useremail</p>
+                                <div class="friendIdWrapper">
+                                    <p class="friendId" title="FriendId:@userid" id="friendId">@userid</p>
+                                    <button class="copyBtn" id="copyBtn" onclick="copyToClipboard()">
+                                        <span class="copyText">Copy ID</span>
+                                        <span class="checkmark">&#10003;</span>  
+                                    </button>
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                        <div class="avpopdiv avpopupip" onclick="redirectToIndex()">
+                            <img src="~/media/plus-circle-svgrepo-com.svg" />
+                            <p>
+                                Add Task
+                            </p>
+                        </div>
+                        <div class="avpopdiv avpopupip"  >
+                            <img src="~/media/chart-upward-svgrepo-com (2).svg" data-user-id="@userid"/>
+                            <p id="wholetasks"> 
+                                Tasks 0/15
+                            </p>
+
+                        </div>
+                        <div class="avpopdiv avpopupip" onclick="redirettoFriendPage()">
+                            <img src="~/media/user-friends-svgrepo-com.svg" />
+                            <p>
+                                Friends
+                            </p>    
+                        </div>
+                        <div class="avpopdiv avpopupip" id="addfriend">
+                            <img src="/media/add-friend-svgrepo-com.svg">
+                            <p>Add Friend</p>
+                        </div>
+                     
+                        <form id="logoutForm" class="avpopdiv avpopupip" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                            <img src="~/media/log-out-1-svgrepo-com.svg" />
+                            <span>Logout</span>
+                            <button id="logout" type="submit" style="display: none;"></button>
+                        </form>
+
+
+
+
+
+                    </div>
+
+                </div>
+             
+
+
+            </div>
+        }
+    }
+      @if (User.Identity.IsAuthenticated)
+    {
+        @if (ViewBag.ShowSidebar == true)
+        {
+            <div id="overlay" class="overlay"></div>
+
+            <form class="ch1-addfriend-form" id="ch1-addfriend-form">
+                <h2>Add Your Friends</h2>
+
+                <label for="ch1-friendId">User Id</label>
+                <input id="ch1-friendId" name="friendId" placeholder="Enter user Id" required>
+                <p id="ch1-user-error" style="font-size: 14px;"></p>
+
+                <button id="ch1-addfriend-btn" type="submit">Submit</button>
+                <button type="button" id="ch1-close-form">Close</button>
+            </form>
+            <div class="set-form" id="set-form">
+                <h2>Settings</h2>
+
+                <label for="fullNameInput">Full Name</label>
+                <input id="fullNameInput" name="fullName" data-fullnameuser="@fullName" placeholder="@fullName" value="@fullName" required>
+                <button type="button" id="saveFullName">Save New Full Name</button>
+                <p id="statusMessage" style="font-size: 14px;"></p>
+                <button type="button" id="changeAvatarBtn">Change Avatar</button>
+                <input type="file" id="avatarInput" style="display:none;" accept="image/*" />
+                <button type="button" onclick="LogoutAndRedirect()">Change Password</button>
+                <button type="button">Close</button>
+            </div>
+        }
+
+    }
+    
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+
+ 
+
+    <script src="~/js/jQueryValidation.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/site.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        $(document).on('click', '#changeAvatarBtn', function () {
+          
+            $('#avatarInput').click();
+        });
+
+   
+        $(document).on('change', '#avatarInput', function (event) {
+            var formData = new FormData();
+            var file = event.target.files[0]; 
+            formData.append('file', file);
+
+            $.ajax({
+                url: '/ToDoList/UploadAvatar',  
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response.success) {
+                        
+                        $('#userAvatar').attr('src', response.avatarUrl);  
+
+                        
+                        $.ajax({
+                            url: '/ToDoList/GetUserAvatar',  
+                            type: 'GET',
+                            success: function (data) {
+                                 $('.avatar-containerimg img.avatarimg').attr('src', data.avatarUrl);
+
+                                 $('.avpopup .avatar').attr('src', data.avatarUrl);
+
+                         
+                                $("#statusMessage").text("Avatar uploaded successfully").css("color", "green");
+                            },
+                            error: function (xhr, status, error) {
+                              
+                                $("#statusMessage").text("Error fetching updated avatar").css("color", "red");
+                            }
+                        });
+                    } else {
+                      
+                        $("#statusMessage").text(response.message).css("color", "red");
+                    }
+                },
+                error: function (xhr, status, error) {
+                     
+                    $("#statusMessage").text("Error uploading avatar").css("color", "red");
+                }
+            });
+        });
+
+
+
+        $(document).on("click", "#saveFullName", function () {
+            var newFullName = $("#fullNameInput").val().trim(); 
+            var oldFullNameAttr = $("#fullNameInput").attr("data-fullnameuser");
+ 
+            var nameRegex = /^[A-Za-zА-Яа-яІіЇїЄєҐґ]+(?:\s[A-Za-zА-Яа-яІіЇїЄєҐґ]+)*$/;
+
+            if (newFullName === "") {
+                $("#statusMessage").text("Full name cannot be empty").css("color", "red");
+                return;
+            }
+
+            if (!nameRegex.test(newFullName)) {
+                $("#statusMessage").text("Full name can only contain letters and single spaces").css("color", "red");
+                return;
+            }
+
+            if (newFullName === oldFullNameAttr) {
+                $("#statusMessage").text("Nothing changed").css("color", "red");
+                return;
+            }
+
+            $.ajax({
+                url: "/ToDoList/UpdateFullName",
+                type: "POST",
+                data: { fullName: newFullName },
+                success: function (response) {
+                    $("#statusMessage").text(response.message).css("color", "green");
+                    $("#fullNameInput").attr("data-fullnameuser", newFullName); 
+                },
+                error: function () {
+                    $("#statusMessage").text("Error updating full name").css("color", "red");
+                }
+            });
+        });
+
+
+         $(document).ready(function () {
+  
+        var userId = $('.avpopdiv img').data('user-id');
+
+       
+        if (userId) {
+            console.log("UserId: " + userId);
+        }
+
+        
+        $.ajax({
+            url: '@Url.Action("GetTaskCounts", "ToDoList")',  
+            type: 'GET',
+            data: { userId: userId },
+            success: function (data) {
+                
+                $('#wholetasks').text('Tasks ' + data.completedTasks + '/' + data.totalTasks);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+    </script>
+    <script>
+ 
+
+       
+
+        function copyToClipboard() {
+            var copyText = document.getElementById("friendId").textContent;
+            var btn = document.getElementById("copyBtn");
+
+       
+            btn.disabled = true;
+
+     
+            navigator.clipboard.writeText(copyText).then(function () {
+       
+                btn.classList.add("active");
+
+                 setTimeout(function () {
+       
+                    btn.classList.remove("active");
+
+       
+                    setTimeout(function () {
+             
+                        btn.disabled = false;
+                    }, 500); 
+                }, 1000);  
+            }).catch(function (error) {
+                console.error('Помилка при копіюванні: ', error);
+                btn.disabled = false;  
+            });
+        }
+
+
+
+        document.getElementById("logoutForm").addEventListener("click", function () {
+            document.getElementById("logout").click();
+        });
+
+
+        document.querySelector('.notcontainer').addEventListener('click', function () {
+            var popup = document.getElementById('notDiv');
+
+           
+            const currentDisplay = window.getComputedStyle(popup).display;
+
+            if (currentDisplay === 'none' || currentDisplay === '') {
+                popup.style.display = 'flex';
+            } else {
+                popup.style.display = 'none';
+            }
+        });
+
+
+
+        document.querySelector('.sideavatcont').addEventListener('click', function () {
+            var popup = document.getElementById('avpopup');
+
+            
+            const currentDisplay = window.getComputedStyle(popup).display;
+
+            if (currentDisplay === 'none' || currentDisplay === '') {
+                popup.style.display = 'flex';
+            } else {
+                popup.style.display = 'none';
+            }
+        });
+
+        
+        document.addEventListener('click', function (event) {
+            const notDiv = document.querySelector('.notDiv');
+            
+            if (notDiv && window.getComputedStyle(notDiv).display === 'flex' && !notDiv.contains(event.target) && !event.target.closest('.notcontainer')) {
+                notDiv.style.display = 'none';  
+            }
+        });
+
+
+     
+       
+    
+      
+
+
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+    var setForm = document.getElementById('set-form');
+    var overlay = document.getElementById('overlay');
+    var closeBtn = document.querySelector('#set-form button:last-of-type');  
+    var settingsDiv = document.getElementById('settings');  
+
+     
+    settingsDiv.addEventListener('click', function () {
+        setForm.classList.add('show');
+        overlay.classList.add('show');
+    });
+
+   
+    closeBtn.addEventListener('click', function (event) {
+        event.preventDefault(); 
+        setForm.classList.remove('show');
+        overlay.classList.remove('show');
+    });
+
+ 
+    overlay.addEventListener('click', function () {
+        setForm.classList.remove('show');
+        overlay.classList.remove('show');
+    });
+    });
+
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var addFriendForm = document.getElementById('ch1-addfriend-form');
+            var overlay = document.getElementById('overlay');
+            var closeBtn = document.getElementById('ch1-close-form');
+            var addFriendDiv = document.getElementById('addfriend');
+
+        
+            addFriendDiv.addEventListener('click', function () {
+                addFriendForm.classList.add('show');
+                overlay.classList.add('show');
+            });
+
+         
+            closeBtn.addEventListener('click', function (event) {
+                event.preventDefault(); 
+                addFriendForm.classList.remove('show');
+                overlay.classList.remove('show');
+            });
+
+          
+            overlay.addEventListener('click', function () {
+                addFriendForm.classList.remove('show');
+                overlay.classList.remove('show');
+            });
+        });
+
+        $(document).ready(function () {
+
+      
+            $("#ch1-addfriend").on("click", function () {
+                $("#ch1-addfriend-form, #ch1-overlay").fadeIn();
+            });
+
+             
+            $("#ch1-close-form, #ch1-overlay").on("click", function () {
+                $("#ch1-addfriend-form, #ch1-overlay").fadeOut();
+            });
+
+       
+            $("#ch1-addfriend-form").on("submit", function (e) {
+                e.preventDefault(); 
+
+                var friendId = $("#ch1-friendId").val().trim();
+                var errorField = $("#ch1-user-error");
+                var submitButton = $("#ch1-addfriend-btn");  
+
+                errorField.text("");  
+
+              
+                if (!friendId) {
+                    errorField.text("Please enter a valid User ID").css("color", "red");
+                    return;
+                }
+
+                 submitButton.prop("disabled", true).text("Sending...");
+
+             
+                $.ajax({
+                    url: "/ToDoList/SendRequest",
+                    type: "POST",
+                    data: { friendId: friendId },
+                    success: function (response) {
+                        $("#ch1-addfriend-form")[0].reset();   
+                        errorField.text("Friend request sent!").css("color", "green");
+                    },
+                    error: function (xhr) {
+                        var errorMessage = "Error sending request";
+                        errorField.text(errorMessage).css("color", "red");
+                    },
+                    complete: function () {
+                         submitButton.prop("disabled", false).text("Add Friend");
+                    }
+                });
+            });
+        });
+
+
+        $(document).on("click", "#notcontainer", function () {
+            $.ajax({
+                url: "/ToDoList/GetUnreadNotifications",
+                type: "GET",
+                success: function (notifications) {
+                    console.log("Notifications received: ", notifications);
+
+                    $("#notificationsContainer").empty();  
+
+                    if (notifications.length === 0) {
+                        $("#notificationsContainer").append('<p class="color94">No new notifications</p>');
+                        return;
+                    }
+
+                    notifications.forEach(function (notification) {
+                        var statusClass = notification.status || "offline";
+                        var avatarSrc = notification.avatarUrl || "/media/3d-illustration-white-man-with-glasses-bow-tie.jpg";
+                        var imgpath = "/media/trash-plus-alt-svgrepo-com (1).svg";
+
+                        var newNotification = `
+                            <div class="not-tst" data-id="${notification.id}">
+                                <div class="avimg">
+                                    <img class="notimg" src="${avatarSrc}" />
+                                    <div class="status-dot ${statusClass}"></div>
+                                </div>
+                                <div class="txtftdiv">
+                                    <p class="notmargin">${notification.message}</p>
+                                    <div class="btn-container">
+                                        <button class="accept-btn" data-id="${notification.senderId}">Accept</button>
+                                        <button class="decline-btn" data-id="${notification.senderId}">Decline</button>
+                                    </div>
+                                    <div class="tst-footer">
+                                        <img class="footer-icon delete-notification" src="${imgpath}" alt="Delete" data-id="${notification.id}" />
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        $("#notificationsContainer").append(newNotification);
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error: ", status, error);
+                }
+            });
+        });
+        $(document).on("click", ".accept-btn, .decline-btn", function () {
+            var senderId = $(this).data("id");
+            var notId = $(this).closest(".not-tst").data("id");
+            var notificationElement = $(this).closest(".not-tst");
+            var action = $(this).hasClass("accept-btn") ? "AcceptRequest" : "DeclineRequest";
+
+            $.ajax({
+                url: "/ToDoList/" + action,
+                type: "POST",
+                data: { senderId: senderId, notId: notId },
+                success: function (response) {
+                    alert(response);
+                    notificationElement.remove();  
+                },
+                error: function (xhr, status, error) {
+                    if (xhr.status === 400 || xhr.status === 404) {
+                        alert("Error: " + xhr.responseText); 
+                        notificationElement.remove();  
+
+                    } else {
+                        console.error("Error processing request:", error);
+                        notificationElement.remove(); 
+
+                    }
+                }
+            });
+        });
+
+
+  
+        $(document).on("click", ".delete-notification", function () {
+            var notificationId = $(this).data("id");
+            console.log(notificationId);
+            $.ajax({
+                url: "/ToDoList/DeleteNotification",
+                type: "POST",
+                data: { id: notificationId },
+                success: function (response) {
+                    alert(response);
+                    $(`.not-tst[data-id="${notificationId}"]`).remove();
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error deleting notification:", error);
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>

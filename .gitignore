@@ -1,0 +1,24 @@
+ bin/
+obj/
+out/
+
+.vs/
+
+ .vs/
+.vscode/
+.idea/
+
+ App_Data/
+
+ *.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+ *.log
+
+ wwwroot/uploads/
+
+ .nuget/
+
+ web.config.user

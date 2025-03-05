@@ -1,0 +1,547 @@
+﻿@model GroupDetailsViewModel
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Group Details";
+}
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/MyStyles.css" />
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDoList</title>
+    <link rel="stylesheet" href="~/css/MyStyles.css" />
+</head>
+<body>
+
+    <div class="collapseop">
+        <img style="width:29px; height:29px;" src="~/media/window-collapse-right-svgrepo-com.svg" alt="Collapse Icon" />
+    </div>
+    <div class="inbox">
+        <div class="inbox-inner">
+            <div class="inbox-col">
+                <h1 class="inbox-header">@Model.Group.Name</h1>
+                <form method="post" id="grouptaskForm" action="/ToDoList/CreateGroupTask">
+                    <div class="add-task">
+                        <input type="text" id="taskInput" name="title" placeholder="Add Task" required />
+                        <input type="hidden" id="dueDateInput" name="dueDate" value="" />
+                        <input type="hidden" id="grouptaskid" name="grouptaskid" value="@Model.Group.Id" />
+                        <input type="hidden" id="groupId" name="groupId" value="@Model.Group.Id" />
+                        <button type="button" id="plusbtn">+</button>
+                    </div>
+                </form>
+                <div id="datePickerModal" style="display: none;">
+                    <div class="modal-content">
+                        <input type="date" id="datepicker" name="dueDate" />
+                        <div class="modal-buttons">
+                            <button id="saveDateBtn">✔ Save</button>
+                            <button id="cancelBtn">✖ Cancel</button>
+                        </div>
+                    </div>
+                </div>
+                <div group-btnspg>
+                    <button class="button-17" id="show-users-btn" style="margin-top:10px;" role="button">Show Users</button>
+                    <button class="button-17" id="addusersgrp" role="button">Add Friends </button>
+                </div>
+                <div class="allusers" id="users-list" style="display: none;">
+                    @foreach (var friend in Model.Members)
+                    {
+                        <div class="friend-item">
+                            <div class="user-container" id="user-container-@friend.Id">
+                                <img src="@friend.AvatarUrl" alt="UserImg" class="user-img">
+                                <a href="#" class="user-name">@friend.FullName</a>
+                            </div>
+                             @if (friend.Id == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                            {
+                                <button class="leave-group-btn" data-id="@friend.Id" data-group-id="@Model.Group.Id" type="button">Leave Group</button>
+                            }
+                            else
+                            {
+                                <button class="delete-btn" data-id="@friend.Id" data-group-id="@Model.Group.Id" type="button">Delete</button>
+                            }
+                        </div>
+                    }
+
+                </div>
+                <div class="my-task">
+                    <div class="tasks-containers">
+                        @foreach (var task in Model.Group.Tasks)
+                        {
+                            <div class="task-container">
+                                <div class="content-task">
+                                    <p id="task-title-@task.Id" class="task-text" data-group-task-id="@task.Id">@task.Title</p>
+                                    <div class="task-footer">
+                                        <div class="date-container">@task.DueDate.ToShortDateString()</div>
+                                        <div class="task-icons">
+                                            <img src="~/media/trash-plus-alt-svgrepo-com (1).svg"
+                                                 alt="Delete"
+                                                 class="delete-icon"
+                                                 data-group-task-id="@task.Id">
+                                            <img src="~/media/edit-2-svgrepo-com (1).svg"
+                                                 alt="Edit"
+                                                 class="edit-icon"
+                                                 data-group-task-id="@task.Id">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="checkbox-wrapper-12">
+                                    <div class="cbx">
+                                        <input id="task-@task.Id"
+                                               type="checkbox"
+                                               data-group-task-id="@task.Id"
+                                        @(task.IsCompleted ? "checked" : "") />
+                                        <label for="task-@task.Id"></label>
+                                        <svg width="15" height="14" viewbox="0 0 15 14" fill="none">
+                                            <path d="M2 8.36364L6.23077 12L13 2"></path>
+                                        </svg>
+                                    </div>
+                                    <!-- Gooey effect -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                                        <defs>
+                                            <filter id="goo-@task.Id">
+                                                <fegaussianblur in="SourceGraphic" stddeviation="4" result="blur"></fegaussianblur>
+                                                <fecolormatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -7" result="goo"></fecolormatrix>
+                                                <feblend in="SourceGraphic" in2="goo"></feblend>
+                                            </filter>
+                                        </defs>
+                                    </svg>
+                                </div>
+
+                            </div>
+
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="addfirendgroupform-container" class="addfirendgroupform-container" style="display: none;">
+        <form class="addfirendgroupform" id="addfirendgroupform" data-groupid="@Model.Group.Id">
+            <h2>Add Your Friends to Group</h2>
+
+            <label for="friendgroup">User Name</label>
+            <input id="friendgroup" name="friendgroup" placeholder="Enter user name" required autocomplete="off">
+            <div id="suggestions"></div> <!-- Контейнер для підказок -->
+            <p id="friendgroup-error" style="font-size: 14px;"></p>
+
+            <button type="button" id="closeFriendGroup">Close</button>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Відкриття форми при натисканні на "Add Friends"
+            $("#addusersgrp").click(function () {
+                $("#addfirendgroupform-container").fadeIn(); // Плавне відкриття
+            });
+
+            // Закриття форми при натисканні на "Close"
+            $("#closeFriendGroup").click(function () {
+                $("#addfirendgroupform-container").fadeOut(); // Плавне закриття
+            });
+        });
+
+
+
+        $(document).on("click", ".suggestion-item", function (event) {
+            // Перевіряємо, чи подія не була вже оброблена
+            event.preventDefault(); // Запобігаємо дефолтній поведінці, якщо це необхідно
+            event.stopPropagation(); // Зупиняємо пропагування події, щоб вона не спрацювала на батьківських елементах
+
+            var groupId = $("#addfirendgroupform").data("groupid"); // Отримуємо ID групи
+            var friendId = $(this).data("userid");
+            console.log(friendId);
+
+            $.ajax({
+                url: '/ToDoList/AddUsersToGroup',
+                type: 'POST',
+                data: { groupId: groupId, friendId: friendId },
+                success: function (response) {
+                    alert("User added successfully!");
+                    $("#friendgroup").val(""); // Очищаємо поле
+                    $("#suggestions").hide();  // Ховаємо підказки
+                    location.reload(); // Перезавантаження сторінки
+                },
+                error: function () {
+                    alert("Error adding user.");
+                }
+            });
+        });
+
+
+        $(document).on('input change', '#friendgroup', function () {
+            var query = $(this).val();
+            if (query.length >= 3) {
+                console.log("User is typing...");
+                $.ajax({
+                    url: '/ToDoList/GetSuggestions',
+                    data: { term: query },
+                    type: 'GET',
+                    success: function (data) {
+                        console.log("Received data:", data);
+
+                        var suggestionsDiv = $("#suggestions");
+                        suggestionsDiv.empty();
+
+                        if (data.length > 0) {
+                            suggestionsDiv.show();
+                            data.forEach(function (item) {
+                                var suggestionItem = $(`
+                                                <div class="suggestion-item" data-userid="${item.friendId}" data-avatarurl="${item.avatarUrl}">
+                                                      <img src="${item.avatarUrl}" class="avatargroupfrimg" alt="User Image">  <!-- Використовуємо AvatarUrl -->
+                                              <span>${item.fullName}</span>
+                                        </div>
+                                    `);
+                                // Додаємо подію кліку по підказці
+                                suggestionItem.click(function () {
+                                    $("#friendgroup").val(item.fullName);
+                                    $("#suggestions").hide();
+                                });
+
+                                suggestionsDiv.append(suggestionItem);
+                            });
+                        } else {
+                            suggestionsDiv.hide();
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching suggestions:", error);
+                        $("#suggestions").hide();
+                    }
+                });
+            } else {
+                $("#suggestions").hide();
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('datePickerModal');
+            const targetElement = document.getElementById('plusbtn');
+            const datePicker = document.getElementById('datepicker');
+            const addTask = document.querySelector('.add-task');
+
+            // Встановлюємо мінімальну дату (сьогоднішній день)
+            const today = new Date().toISOString().split('T')[0]; // Отримуємо дату у форматі YYYY-MM-DD
+            datePicker.setAttribute('min', today);
+
+            // Відкриваємо модальне вікно при натисканні на кнопку
+            targetElement.addEventListener('click', function () {
+                // Відкриваємо модальне вікно
+                modal.style.display = 'block';
+                setTimeout(() => {
+                    modal.style.visibility = 'visible';
+                    modal.style.opacity = '1';
+                }, 10); // невелика затримка для анімації
+            });
+
+            // Закриваємо модальне вікно, якщо клікнули поза ним
+            document.addEventListener('click', function (event) {
+                if (!modal.contains(event.target) && event.target !== targetElement) {
+                    modal.style.visibility = 'hidden';
+                    modal.style.opacity = '0';
+                    setTimeout(() => modal.style.display = 'none', 200); // Затримка для анімації
+                }
+            });
+
+            // Кнопка збереження дати
+            document.getElementById('saveDateBtn').addEventListener('click', function (event) {
+                const taskInput = document.getElementById('taskInput');
+                const datePicker = document.getElementById('datepicker');
+
+                // Перевірка, чи поле з завданням не порожнє
+                if (taskInput.value.trim() === '') {
+                    event.preventDefault(); // Зупиняємо дію кнопки
+                    alert('Input your task'); // Повідомлення користувачеві
+                    taskInput.focus(); // Переміщення курсору в поле
+                    return; // Зупиняємо виконання коду далі
+                }
+
+                // Перевірка, чи вибрана дата
+                const selectedDate = datePicker.value;
+                if (!selectedDate) {
+                    event.preventDefault();
+                    alert('Please select a date!');
+                    return;
+                }
+
+                // Записуємо дату у приховане поле
+                document.getElementById('dueDateInput').value = selectedDate;
+
+                // Відправляємо форму
+                document.getElementById('grouptaskForm').submit();
+
+                // Ховаємо модальне вікно
+                modal.style.visibility = 'hidden';
+                modal.style.opacity = '0';
+                setTimeout(() => modal.style.display = 'none', 200); // Затримка для анімації
+            });
+
+            // Кнопка скасування
+            document.getElementById('cancelBtn').addEventListener('click', function () {
+                modal.style.visibility = 'hidden';
+                modal.style.opacity = '0';
+                setTimeout(() => modal.style.display = 'none', 200); // Затримка для анімації
+            });
+
+            // Закриття модального вікна при зміні розміру вікна або скролі
+            window.addEventListener('resize', closeModalOnWindowChange);
+            window.addEventListener('scroll', closeModalOnWindowChange);
+
+            function closeModalOnWindowChange() {
+                if (modal.style.display === 'block') {
+                    modal.style.visibility = 'hidden';
+                    modal.style.opacity = '0';
+                    setTimeout(() => modal.style.display = 'none', 200); // Затримка для анімації
+                }
+            }
+        });
+
+
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).on('click', '.edit-icon', function () {
+            var taskId = $(this).attr('data-group-task-id'); // Отримуємо taskId
+            // console.log("taskId (before AJAX):", taskId);
+
+            var taskTitleElement = $('#task-title-' + taskId); // Отримуємо заголовок задачі
+
+            if (taskTitleElement.length === 0) {
+                console.log("Помилка: елемент taskTitleElement не знайдено!");
+                return;
+            }
+
+            var currentTitle = taskTitleElement.text().trim(); // Отримуємо поточний текст
+            var inputField = $('<input>', {
+                type: 'text',
+                value: currentTitle,
+                class: 'task-input'
+            });
+
+            taskTitleElement.empty().append(inputField); // Замінюємо текст на input
+            inputField.focus(); // Фокусуємо поле
+
+            // Переміщення курсора в кінець тексту
+            var tempValue = inputField.val();
+            inputField.val('').val(tempValue);
+
+            // Обробка події втрати фокусу
+            inputField.on('blur', function () {
+                var updatedTitle = inputField.val().trim();
+                console.log("Updated Title:", updatedTitle);
+
+                if (updatedTitle === currentTitle || updatedTitle === "") {
+                    taskTitleElement.text(currentTitle); // Якщо нічого не змінилося - повертаємо назад
+                    return;
+                }
+
+                $.ajax({
+                    url: '/ToDoList/UpdateGroupTaskTitle',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ taskId: taskId, newTitle: updatedTitle }),
+                    success: function (response) {
+                        console.log("Server Response:", response);
+                        if (response.success) { // Правильна перевірка success
+                            taskTitleElement.text(updatedTitle); // Оновлюємо текст у DOM
+                        } else {
+                            taskTitleElement.text(currentTitle); // Якщо помилка, повертаємо старе значення
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("AJAX Error:", error);
+                        taskTitleElement.text(currentTitle); // Повертаємо старий текст при помилці
+                    }
+                });
+            });
+
+            // Обробка натискання Enter
+            inputField.on('keypress', function (e) {
+                if (e.which === 13) {  // Enter key
+                    $(this).blur();
+                }
+            });
+        });
+        $('.cbx input[type="checkbox"]').on('change', function () {
+            var taskId = $(this).data('group-task-id');
+            var isChecked = $(this).prop('checked'); // Отримуємо новий статус чекбоксу
+
+            console.log("taskId:", taskId, "Is Completed:", isChecked); // Логуємо значення перед відправкою
+
+            // Відправка AJAX запиту для оновлення статусу
+            $.ajax({
+                url: '@Url.Action("UpdateGroupTaskCompletion", "ToDoList")',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    taskId: taskId,
+                    isCompleted: isChecked
+                }),
+                success: function (data) {
+                    console.log("Server Response:", data);
+                    if (data.result === "success") {
+                        // Статус успішно оновлений
+                        console.log("Task completion updated.");
+                    } else {
+                        // Відновити попередній статус, якщо сталася помилка
+                        $(this).prop('checked', !isChecked);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("AJAX Error:", error);
+                    $(this).prop('checked', !isChecked); // Відновити попередній статус у разі помилки
+                }
+            });
+        });
+        $(document).on("click", ".delete-icon", function () {
+            let taskId = $(this).data("group-task-id");
+            let taskElement = $(this).closest(".task-container"); // Знайти контейнер завдання
+
+            $.ajax({
+                url: "/ToDoList/DeleteGroupTask",
+                type: "POST",
+                contentType: "application/json", // Встановлюємо правильний content type
+                data: JSON.stringify({ taskId: taskId }), // Відправляємо JSON-формат
+                success: function (response) {
+                    if (response.success) {
+                        console.log("Task deleted successfully!");
+                        taskElement.fadeOut(150, function () { $(this).remove(); }); // Плавне видалення
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error deleting task:", error);
+                }
+            });
+        });
+      
+        $(document).on('click', '#show-users-btn', function () {
+            var $button = $(this);
+            var $userList = $("#users-list");
+
+            // Вимикаємо кнопку на час анімації
+            $button.prop("disabled", true);
+
+            // Виконуємо анімацію
+            $userList.slideToggle(300, function () {
+                // Після завершення анімації оновлюємо текст кнопки
+                var isVisible = $userList.is(":visible");
+                $button.text(isVisible ? "Hide Users" : "Show Users");
+
+                // Увімкнення кнопки після завершення анімації
+                $button.prop("disabled", false);
+            });
+        });
+        $(document).on("click", ".delete-btn", function () {
+            var userId = $(this).data("id");
+            var groupId = $(this).data("group-id");
+            var friendItem = $(this).closest(".friend-item"); // Get the parent friend-item div
+
+            $.ajax({
+                url: "/ToDoList/RemoveUserFromGroup",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ userId: userId, groupId: groupId }),
+                beforeSend: function () {
+                    $(".delete-btn").prop("disabled", true); // Disable buttons during the request
+                },
+                success: function (response) {
+                    if (response.success) {
+                        friendItem.slideUp(300, function () {
+                            $(this).remove(); // Remove the entire friend-item div
+                        });
+                    } else {
+                        alert("Error: " + response.message);
+                    }
+                },
+                error: function () {
+                    alert("Something went wrong. Please try again.");
+                },
+                complete: function () {
+                    $(".delete-btn").prop("disabled", false); // Enable buttons after the request is completed
+                }
+            });
+        });
+
+        $(document).on("click", ".leave-group-btn", function () {
+            var userId = $(this).data("id");
+            var groupId = $(this).data("group-id");
+            var isLastMember = $(".friend-item").length === 1;
+            var friendItem = $(this).closest(".friend-item"); // Get the parent friend-item div
+
+            if (isLastMember) {
+                if (!confirm("Are you sure? Leaving will delete the group.")) {
+                    return;
+                }
+            }
+
+            $.ajax({
+                url: "/ToDoList/LeaveGroup",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ userId: userId, groupId: groupId }),
+                success: function (response) {
+                    if (response.success) {
+                        friendItem.fadeOut(300, function () {
+                            $(this).remove(); // Remove the entire friend-item div
+                        });
+
+                        if (response.isGroupEmpty) {
+                            alert("The group has been deleted.");
+                            window.location.href = "/ToDoList/GroupTasks"; // Redirect to GroupTasks page
+                        } else {
+                            alert("You have left the group.");
+                            window.location.href = "/ToDoList/GroupTasks"; // Redirect to GroupTasks page
+                        }
+                    } else {
+                        alert("Error: " + response.message);
+                    }
+                }
+            });
+
+        });
+
+
+</script>
+
+</body>
+</html>
+
+@* 
+<h2>@Model.Group.Name</h2>
+<p>@Model.Group.Description</p>
+
+<h3>Members:</h3>
+<ul>
+    @foreach (var member in Model.Members)
+    {
+        <li>@member.UserName (@member.Email)</li>
+    }
+</ul>
+
+<h3>Tasks:</h3>
+<ul>
+    @if (Model.Tasks.Any())
+    {
+        @foreach (var task in Model.Tasks)
+        {
+            <li>
+                <strong>@task.Title</strong> - @task.Description (Due: @task.DueDate.ToShortDateString())
+            </li>
+        }
+    }
+    else
+    {
+        <p>No tasks available</p>
+    }
+</ul>
+ *@
