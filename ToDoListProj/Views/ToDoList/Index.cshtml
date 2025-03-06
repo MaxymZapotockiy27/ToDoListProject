@@ -93,71 +93,63 @@
             const targetElement = document.getElementById('plusbtn');
             const datePicker = document.getElementById('datepicker');
             const addTask = document.querySelector('.add-task');
+            const taskForm = document.getElementById('taskForm');
+            const taskInput = document.getElementById('taskInput');
 
-            // Встановлюємо мінімальну дату (сьогоднішній день)
-            const today = new Date().toISOString().split('T')[0]; // Отримуємо дату у форматі YYYY-MM-DD
+            const today = new Date().toISOString().split('T')[0];
             datePicker.setAttribute('min', today);
 
-            // Відкриваємо модальне вікно при натисканні на кнопку
             targetElement.addEventListener('click', function () {
-                // Відкриваємо модальне вікно
                 modal.style.display = 'block';
                 setTimeout(() => {
                     modal.style.visibility = 'visible';
                     modal.style.opacity = '1';
-                }, 10); // невелика затримка для анімації
+                }, 10);
             });
 
-            // Закриваємо модальне вікно, якщо клікнули поза ним
             document.addEventListener('click', function (event) {
                 if (!modal.contains(event.target) && event.target !== targetElement) {
                     modal.style.visibility = 'hidden';
                     modal.style.opacity = '0';
-                    setTimeout(() => modal.style.display = 'none', 200); // Затримка для анімації
+                    setTimeout(() => modal.style.display = 'none', 200);
                 }
             });
 
-            // Кнопка збереження дати
             document.getElementById('saveDateBtn').addEventListener('click', function (event) {
-                const taskInput = document.getElementById('taskInput');
-                const datePicker = document.getElementById('datepicker');
-
-                // Перевірка, чи поле з завданням не порожнє
-                if (taskInput.value.trim() === '') {
-                    event.preventDefault(); // Зупиняємо дію кнопки
-                    alert('Input your task'); // Повідомлення користувачеві
-                    taskInput.focus(); // Переміщення курсору в поле
-                    return; // Зупиняємо виконання коду далі
-                }
-
-                // Перевірка, чи вибрана дата
                 const selectedDate = datePicker.value;
-                if (!selectedDate) {
+
+                if (taskInput.value.trim() === '') {
                     event.preventDefault();
-                    alert('Please select a date!');
+                    alert('Input your task');
+                    taskInput.focus();
                     return;
                 }
 
-                // Записуємо дату у приховане поле
+                if (!selectedDate) {
+                    event.preventDefault();
+                    alert('Please select a date!');
+                    modal.style.display = 'block';   
+                    setTimeout(() => {
+                        modal.style.visibility = 'visible';
+                        modal.style.opacity = '1';
+                    }, 10);
+                    return;
+                }
+
                 document.getElementById('dueDateInput').value = selectedDate;
+                taskForm.submit();
 
-                // Відправляємо форму
-                document.getElementById('taskForm').submit();
-
-                // Ховаємо модальне вікно
                 modal.style.visibility = 'hidden';
                 modal.style.opacity = '0';
-                setTimeout(() => modal.style.display = 'none', 200); // Затримка для анімації
+                setTimeout(() => modal.style.display = 'none', 200);
             });
 
-            // Кнопка скасування
             document.getElementById('cancelBtn').addEventListener('click', function () {
                 modal.style.visibility = 'hidden';
                 modal.style.opacity = '0';
-                setTimeout(() => modal.style.display = 'none', 200); // Затримка для анімації
+                setTimeout(() => modal.style.display = 'none', 200);
             });
 
-            // Закриття модального вікна при зміні розміру вікна або скролі
             window.addEventListener('resize', closeModalOnWindowChange);
             window.addEventListener('scroll', closeModalOnWindowChange);
 
@@ -165,11 +157,45 @@
                 if (modal.style.display === 'block') {
                     modal.style.visibility = 'hidden';
                     modal.style.opacity = '0';
-                    setTimeout(() => modal.style.display = 'none', 200); // Затримка для анімації
+                    setTimeout(() => modal.style.display = 'none', 200);
                 }
             }
-        });
 
+         
+            taskForm.addEventListener('submit', function (event) {
+                const selectedDate = datePicker.value;
+                if (taskInput.value.trim() === '' || !selectedDate) {
+                    event.preventDefault();
+                    alert('Please make sure the task and date are filled in!');
+                    modal.style.display = 'block';  
+                    setTimeout(() => {
+                        modal.style.visibility = 'visible';
+                        modal.style.opacity = '1';
+                    }, 10);
+                }
+            });
+
+            taskInput.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();   
+                    const selectedDate = datePicker.value;
+                    if (taskInput.value.trim() === '') {
+                        alert('Input your task');
+                        taskInput.focus();
+                    } else if (!selectedDate) {
+                        alert('Please select a date!');
+                        modal.style.display = 'block';  
+                        setTimeout(() => {
+                            modal.style.visibility = 'visible';
+                            modal.style.opacity = '1';
+                        }, 10);
+                    } else {
+                        document.getElementById('dueDateInput').value = selectedDate;
+                        taskForm.submit();
+                    }
+                }
+            });
+        });
 
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
