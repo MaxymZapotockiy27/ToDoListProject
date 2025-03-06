@@ -171,7 +171,7 @@ $(document).ready(function () {
                         ${response.title}
                     </div>
                     <div class="task-buttons">
-                        <img src="${imagetrashPath}" class="delete-btn" alt="Delete">
+                        <img src="${imagetrashPath}" style="background-color: transparent;padding:0;" class="delete-btn" alt="Delete">
                         <img src="${imageeditPath}" class="edit-btn" alt="Edit">
                     </div>
                     <div class="checkbox-wrapper-12">
