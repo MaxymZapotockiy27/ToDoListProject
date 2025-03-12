@@ -21,7 +21,7 @@ namespace ToDoListProj.Areas.Identity.Pages.Account
         /// </summary>
         public void OnGet(string returnUrl = null)
         {
-            ReturnUrl = returnUrl ?? Url.Content("~/"); // Якщо returnUrl не передано, використовуємо головну сторінку
+            ReturnUrl = returnUrl ?? Url.Content("~/"); 
 
         }
     }

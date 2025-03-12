@@ -8,28 +8,25 @@
 	}
 }(function( $ ) {
 
-/*
- * Translated default messages for the jQuery validation plugin.
- * Locale: BG (Bulgarian; български език)
- */
-$.extend( $.validator.messages, {
-	required: "Полето е задължително.",
-	remote: "Моля, въведете правилната стойност.",
-	email: "Моля, въведете валиден email.",
-	url: "Моля, въведете валидно URL.",
-	date: "Моля, въведете валидна дата.",
-	dateISO: "Моля, въведете валидна дата (ISO).",
-	number: "Моля, въведете валиден номер.",
-	digits: "Моля, въведете само цифри.",
-	creditcard: "Моля, въведете валиден номер на кредитна карта.",
-	equalTo: "Моля, въведете същата стойност отново.",
-	extension: "Моля, въведете стойност с валидно разширение.",
-	maxlength: $.validator.format( "Моля, въведете не повече от {0} символа." ),
-	minlength: $.validator.format( "Моля, въведете поне {0} символа." ),
-	rangelength: $.validator.format( "Моля, въведете стойност с дължина между {0} и {1} символа." ),
-	range: $.validator.format( "Моля, въведете стойност между {0} и {1}." ),
-	max: $.validator.format( "Моля, въведете стойност по-малка или равна на {0}." ),
-	min: $.validator.format( "Моля, въведете стойност по-голяма или равна на {0}." )
-} );
-return $;
-}));
+ 
+	$.extend($.validator.messages, {
+		required: "This field is required.",
+		remote: "Please enter the correct value.",
+		email: "Please enter a valid email.",
+		url: "Please enter a valid URL.",
+		date: "Please enter a valid date.",
+		dateISO: "Please enter a valid date (ISO).",
+		number: "Please enter a valid number.",
+		digits: "Please enter only digits.",
+		creditcard: "Please enter a valid credit card number.",
+		equalTo: "Please enter the same value again.",
+		extension: "Please enter a value with a valid extension.",
+		maxlength: $.validator.format("Please enter no more than {0} characters."),
+		minlength: $.validator.format("Please enter at least {0} characters."),
+		rangelength: $.validator.format("Please enter a value between {0} and {1} characters long."),
+		range: $.validator.format("Please enter a value between {0} and {1}."),
+		max: $.validator.format("Please enter a value less than or equal to {0}."),
+		min: $.validator.format("Please enter a value greater than or equal to {0}.")
+	});
+	return $;
+	}));

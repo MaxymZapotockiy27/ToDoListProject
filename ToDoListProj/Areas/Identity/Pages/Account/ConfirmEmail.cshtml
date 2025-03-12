@@ -42,7 +42,7 @@
             input.addEventListener("input", function () {
                 if (this.value.length === 1) {
                     if (index < inputs.length - 1) {
-                        inputs[index + 1].focus(); // Перехід до наступного поля
+                        inputs[index + 1].focus();  
                     }
                 }
             });
@@ -50,7 +50,7 @@
             input.addEventListener("keydown", function (event) {
                 if (event.key === "Backspace" && this.value.length === 0) {
                     if (index > 0) {
-                        inputs[index - 1].focus(); // Перехід назад
+                        inputs[index - 1].focus();  
                     }
                 }
             });

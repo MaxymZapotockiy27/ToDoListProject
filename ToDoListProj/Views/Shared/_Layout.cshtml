@@ -85,8 +85,9 @@
                     </div>
                     <div class="search">
                         <img src="~/media/search-svgrepo-com.svg" />
-                        <input type="text" placeholder="Search" />
+                        <input type="text" id="searchInput" placeholder="Search" />
                     </div>
+
                     <div class="menu-group">
                         <div onclick="redirectToIndex()" class="menu-items">
                             <img class="icon" src="~/media/inbox-svgrepo-com.svg" />
@@ -262,6 +263,7 @@
           
             $('#avatarInput').click();
         });
+      
 
    
         $(document).on('change', '#avatarInput', function (event) {
@@ -348,6 +350,27 @@
 
 
          $(document).ready(function () {
+             $('.task-container').css('display', 'flex');  
+
+            $('#searchInput').on('input', function () {
+                var searchTerm = $(this).val().toLowerCase().trim();
+
+                
+                if (searchTerm === '') {
+                    $('.task-container').css('display', 'flex');  
+                } else {
+                    $('.task-container').each(function () {
+                        var taskText = $(this).find('.task-text').text().toLowerCase();
+
+                         
+                        if (taskText.includes(searchTerm)) {
+                            $(this).css('display', 'flex');  
+                        } else {
+                            $(this).css('display', 'none');  
+                        }
+                    });
+                }
+            });
   
         var userId = $('.avpopdiv img').data('user-id');
 

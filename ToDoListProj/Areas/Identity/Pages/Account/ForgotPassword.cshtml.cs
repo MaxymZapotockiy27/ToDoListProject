@@ -99,7 +99,7 @@ namespace ToDoListProj.Areas.Identity.Pages.Account
         private async Task SendEmail(string email)
         {
             var fromMail = "todolisttodolist43@gmail.com";
-            var fromPassword = "gzrolgsmvosxowfw";
+            var fromPassword = "xmeo nmwe kxae pawr";
             var user = await _userManager.FindByEmailAsync(Input.Email);
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);

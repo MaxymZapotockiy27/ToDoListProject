@@ -9,7 +9,7 @@ namespace ToDoListProj.Models
         [Required]
         public string FullName { get; set; }
 
-        public string? AvatarUrl { get; set; } // Зберігаємо тільки шлях або URL
+        public string? AvatarUrl { get; set; }  
 
         public ICollection<TaskItem>? Tasks { get; set; }
         public ICollection<Project>? Projects { get; set; }

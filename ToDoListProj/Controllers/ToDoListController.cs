@@ -169,27 +169,30 @@ namespace ToDoListProj.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-    
             var today = DateTime.Now.Date;
-            var tasks = await _applicationDbContext.TaskItems
-                .Where(t => t.UserId == user.Id && t.ProjectId == null && t.GroupTask == null && t.DueDate.Date >= today)
+
+             var tasks = await _applicationDbContext.TaskItems
+                .Where(t => t.UserId == user.Id &&
+                            t.ProjectId == null &&
+                            t.GroupTask == null &&
+                            t.DueDate.Date >= today)
                 .ToListAsync();
 
-         
-            if (startDate.HasValue)
+             if (startDate.HasValue)
             {
-                tasks = tasks.Where(t => t.DueDate >= startDate.Value).ToList();
-                ViewData["StartDate"] = startDate.Value.ToString("yyyy-MM-dd");
+                var start = startDate.Value.Date;
+                tasks = tasks.Where(t => t.DueDate.Date >= start).ToList();
+                ViewData["StartDate"] = start.ToString("yyyy-MM-dd");
             }
 
-     
-            if (endDate.HasValue)
+             if (endDate.HasValue)
             {
-                tasks = tasks.Where(t => t.DueDate <= endDate.Value).ToList();
-                ViewData["EndDate"] = endDate.Value.ToString("yyyy-MM-dd");
+                var end = endDate.Value.Date;
+                tasks = tasks.Where(t => t.DueDate.Date <= end).ToList();
+                ViewData["EndDate"] = end.ToString("yyyy-MM-dd");
             }
 
-            tasks = tasks.OrderBy(t => t.DueDate).ToList();
+             tasks = tasks.OrderBy(t => t.DueDate).ToList();
 
             ViewBag.ShowSidebar = true;
 
@@ -650,8 +653,7 @@ namespace ToDoListProj.Controllers
                 return NotFound("User not found");
             }
 
-            // Перевірка чи друг вже в групі
-            var existingMember = await _applicationDbContext.GroupMembers
+             var existingMember = await _applicationDbContext.GroupMembers
                 .FirstOrDefaultAsync(gm => gm.GroupTaskId == groupId && gm.UserId == friendId);
 
             if (existingMember != null)
@@ -686,7 +688,7 @@ namespace ToDoListProj.Controllers
         {
             if (model == null)
             {
-                return BadRequest("Некоректні дані!");
+                return BadRequest("Incorrect data!");
             }
 
             Console.WriteLine($"Group Name: {model.Name}");
@@ -727,7 +729,7 @@ namespace ToDoListProj.Controllers
             _applicationDbContext.GroupMembers.AddRange(groupMembers);
             await _applicationDbContext.SaveChangesAsync();
 
-            return Ok(new { message = "Група успішно створена!", groupId = newGroup.Id });
+            return Ok(new { message = "Group successfully created!", groupId = newGroup.Id });
         }
 
 
@@ -960,7 +962,7 @@ namespace ToDoListProj.Controllers
         {
             var group = await _applicationDbContext.GroupTasks.FindAsync(groupId);
             if (group == null)
-                return NotFound(new { success = false, message = "Групу не знайдено" });
+                return NotFound(new { success = false, message = "Group not found" });
 
            
             if (file == null || file.Length == 0)
@@ -975,7 +977,7 @@ namespace ToDoListProj.Controllers
             var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg" };
             var fileExtension = Path.GetExtension(file.FileName).ToLower();
             if (!allowedExtensions.Contains(fileExtension))
-                return BadRequest(new { success = false, message = "Недопустимий формат файлу. Дозволені лише зображення." });
+                return BadRequest(new { success = false, message = "Invalid file format. Only images are allowed." });
 
          
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
@@ -1067,7 +1069,7 @@ namespace ToDoListProj.Controllers
         public async Task<IActionResult> SendSupportMessage(string name, string email, string message)
         {
             var fromMail = "todolisttodolist43@gmail.com";
-            var fromPassword = "gzrolgsmvosxowfw";
+            var fromPassword = "xmeo nmwe kxae pawr";
             var toMail = "todolisttodolist43@gmail.com";
 
             try

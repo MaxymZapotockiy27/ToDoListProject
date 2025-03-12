@@ -28,49 +28,55 @@ public class ConfirmEmailModel : PageModel
 
     public async Task<IActionResult> OnPostAsync(string userId)
     {
-
         if (string.IsNullOrEmpty(Input.Code))
         {
-            StatusMessage = "Будь ласка, введіть код підтвердження.";
+            StatusMessage = "Please enter the confirmation code.";
             return Page();
         }
 
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
         {
-            StatusMessage = "Користувача не знайдено.";
+            StatusMessage = "User not found.";
             return Page();
         }
 
-        // Отримуємо збережений код з Redis
+        
+        if (user.EmailConfirmed)
+        {
+            StatusMessage = "Your email has already been confirmed.";
+            return RedirectToPage("/Account/Login"); 
+        }
+
+        
         var storedCode = await _redisService.GetCodeAsync(userId);
         if (storedCode == null)
         {
-            StatusMessage = "Код не знайдено або він протермінований.";
+            StatusMessage = "The code was not found or has expired.";
             return Page();
         }
 
         if (storedCode != Input.Code)
         {
-            StatusMessage = "Невірний код підтвердження.";
+            StatusMessage = "Invalid confirmation code.";
             return Page();
         }
 
-        // ✅ Оновлюємо статус підтвердження email вручну
+        
         user.EmailConfirmed = true;
         var result = await _userManager.UpdateAsync(user);
 
         if (!result.Succeeded)
         {
-            StatusMessage = "Сталася помилка при підтвердженні email.";
+            StatusMessage = "An error occurred while confirming the email.";
             return Page();
         }
 
-        // Видаляємо код з Redis після успішного підтвердження
+        
         await _redisService.RemoveCodeAsync(userId);
 
-        StatusMessage = "Дякуємо за підтвердження email!";
-        return RedirectToPage("/Account/Login"); // Направляємо на вхід після підтвердження
+        StatusMessage = "Thank you for confirming the email!";
+        return RedirectToPage("/Account/Login");  
     }
 
 }

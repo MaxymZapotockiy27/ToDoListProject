@@ -39,18 +39,18 @@
 
             fetch("/ToDoList/SendSupportMessage", {
                 method: "POST",
-                body: new URLSearchParams(formData) // Форматуємо дані для надсилання
+                body: new URLSearchParams(formData)  
             })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert("✅ Повідомлення успішно надіслано!");
-                        document.getElementById("supportForm").reset(); // Очистка форми
+                        alert("✅ Message sent successfully!");
+                        document.getElementById("supportForm").reset();  
                     } else {
-                        alert("❌ Помилка: " + data.error);
+                        alert("❌ Error: " + data.error);
                     }
                 })
-                .catch(error => console.error("❌ Помилка відправки:", error));
+                .catch(error => console.error("❌ Error:", error));
         });
     </script>
 </body>

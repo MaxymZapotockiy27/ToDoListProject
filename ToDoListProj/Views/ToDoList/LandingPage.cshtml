@@ -149,7 +149,7 @@
             function smoothScroll() {
                 if (currentPosition > 0) {
                     window.requestAnimationFrame(smoothScroll);
-                    currentPosition -= 70;  // Швидкість прокручування (збільшена)
+                    currentPosition -= 70;   
                     document.documentElement.scrollTop = currentPosition;
                     document.body.scrollTop = currentPosition;
                 }

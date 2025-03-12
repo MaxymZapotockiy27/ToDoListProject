@@ -22,7 +22,7 @@
                 }
             },
             submitHandler: function (form) {
-                form.submit(); // Якщо валідація пройшла успішно, форма буде відправлена
+                form.submit();  
             }
         });
     });

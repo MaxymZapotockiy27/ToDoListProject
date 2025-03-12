@@ -1,6 +1,6 @@
 ﻿$(document).on("click", ".delete-icon", function () {
     let taskId = $(this).data("task-id");
-    let taskElement = $(this).closest(".task-container"); // Знайти контейнер завдання
+    let taskElement = $(this).closest(".task-container"); 
 
     $.ajax({
         url: "/ToDoList/DeleteTask",
@@ -9,7 +9,7 @@
         success: function (response) {
             if (response.success) {
                 console.log("Task deleted successfully!");
-                taskElement.fadeOut(150, function () { $(this).remove(); }); // Плавне видалення
+                taskElement.fadeOut(150, function () { $(this).remove(); }); 
             }
         },
         error: function (xhr, status, error) {

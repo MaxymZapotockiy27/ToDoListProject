@@ -49,7 +49,7 @@
                 </div>
                 <div group-btnspg>
                     <button class="button-17" id="show-users-btn" style="margin-top:10px;" role="button">Show Users</button>
-                    <button class="button-17" id="addusersgrp" role="button">Add Friends </button>
+                    <button class="button-17" id="addusersgrp" role="button">Add to Group</button>
                 </div>
                 <div class="allusers" id="users-list" style="display: none;">
                     @foreach (var friend in Model.Members)
@@ -129,7 +129,7 @@
 
             <label for="friendgroup">User Name</label>
             <input id="friendgroup" name="friendgroup" placeholder="Enter user name" required autocomplete="off">
-            <div id="suggestions"></div> <!-- Контейнер для підказок -->
+            <div id="suggestions"></div> 
             <p id="friendgroup-error" style="font-size: 14px;"></p>
 
             <button type="button" id="closeFriendGroup">Close</button>
@@ -139,25 +139,25 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
-            // Відкриття форми при натисканні на "Add Friends"
+          
             $("#addusersgrp").click(function () {
-                $("#addfirendgroupform-container").fadeIn(); // Плавне відкриття
+                $("#addfirendgroupform-container").fadeIn(); 
             });
 
-            // Закриття форми при натисканні на "Close"
+            
             $("#closeFriendGroup").click(function () {
-                $("#addfirendgroupform-container").fadeOut(); // Плавне закриття
+                $("#addfirendgroupform-container").fadeOut();  
             });
         });
 
 
 
         $(document).on("click", ".suggestion-item", function (event) {
-            // Перевіряємо, чи подія не була вже оброблена
-            event.preventDefault(); // Запобігаємо дефолтній поведінці, якщо це необхідно
-            event.stopPropagation(); // Зупиняємо пропагування події, щоб вона не спрацювала на батьківських елементах
+             
+            event.preventDefault();  
+            event.stopPropagation();  
 
-            var groupId = $("#addfirendgroupform").data("groupid"); // Отримуємо ID групи
+            var groupId = $("#addfirendgroupform").data("groupid");  
             var friendId = $(this).data("userid");
             console.log(friendId);
 
@@ -167,9 +167,9 @@
                 data: { groupId: groupId, friendId: friendId },
                 success: function (response) {
                     alert("User added successfully!");
-                    $("#friendgroup").val(""); // Очищаємо поле
-                    $("#suggestions").hide();  // Ховаємо підказки
-                    location.reload(); // Перезавантаження сторінки
+                    $("#friendgroup").val("");  
+                    $("#suggestions").hide();  
+                    location.reload();  
                 },
                 error: function () {
                     alert("Error adding user.");
@@ -197,11 +197,11 @@
                             data.forEach(function (item) {
                                 var suggestionItem = $(`
                                                 <div class="suggestion-item" data-userid="${item.friendId}" data-avatarurl="${item.avatarUrl}">
-                                                      <img src="${item.avatarUrl}" class="avatargroupfrimg" alt="User Image">  <!-- Використовуємо AvatarUrl -->
+                                                      <img src="${item.avatarUrl}" class="avatargroupfrimg" alt="User Image">  
                                               <span>${item.fullName}</span>
                                         </div>
                                     `);
-                                // Додаємо подію кліку по підказці
+                            
                                 suggestionItem.click(function () {
                                     $("#friendgroup").val(item.fullName);
                                     $("#suggestions").hide();
@@ -230,43 +230,43 @@
             const datePicker = document.getElementById('datepicker');
             const addTask = document.querySelector('.add-task');
 
-            // Встановлюємо мінімальну дату (сьогоднішній день)
-            const today = new Date().toISOString().split('T')[0]; // Отримуємо дату у форматі YYYY-MM-DD
+          
+            const today = new Date().toISOString().split('T')[0]; 
             datePicker.setAttribute('min', today);
 
-            // Відкриваємо модальне вікно при натисканні на кнопку
+          
             targetElement.addEventListener('click', function () {
-                // Відкриваємо модальне вікно
+           
                 modal.style.display = 'block';
                 setTimeout(() => {
                     modal.style.visibility = 'visible';
                     modal.style.opacity = '1';
-                }, 10); // невелика затримка для анімації
+                }, 10);  
             });
 
-            // Закриваємо модальне вікно, якщо клікнули поза ним
+          
             document.addEventListener('click', function (event) {
                 if (!modal.contains(event.target) && event.target !== targetElement) {
                     modal.style.visibility = 'hidden';
                     modal.style.opacity = '0';
-                    setTimeout(() => modal.style.display = 'none', 200); // Затримка для анімації
+                    setTimeout(() => modal.style.display = 'none', 200); 
                 }
             });
 
-            // Кнопка збереження дати
+           
             document.getElementById('saveDateBtn').addEventListener('click', function (event) {
                 const taskInput = document.getElementById('taskInput');
                 const datePicker = document.getElementById('datepicker');
 
-                // Перевірка, чи поле з завданням не порожнє
+               
                 if (taskInput.value.trim() === '') {
-                    event.preventDefault(); // Зупиняємо дію кнопки
-                    alert('Input your task'); // Повідомлення користувачеві
-                    taskInput.focus(); // Переміщення курсору в поле
-                    return; // Зупиняємо виконання коду далі
+                    event.preventDefault(); 
+                    alert('Input your task');  
+                    taskInput.focus();  
+                    return;  
                 }
 
-                // Перевірка, чи вибрана дата
+              
                 const selectedDate = datePicker.value;
                 if (!selectedDate) {
                     event.preventDefault();
@@ -274,26 +274,26 @@
                     return;
                 }
 
-                // Записуємо дату у приховане поле
+              
                 document.getElementById('dueDateInput').value = selectedDate;
 
-                // Відправляємо форму
+              
                 document.getElementById('grouptaskForm').submit();
 
-                // Ховаємо модальне вікно
+             
                 modal.style.visibility = 'hidden';
                 modal.style.opacity = '0';
-                setTimeout(() => modal.style.display = 'none', 200); // Затримка для анімації
+                setTimeout(() => modal.style.display = 'none', 200);  
             });
 
-            // Кнопка скасування
+        
             document.getElementById('cancelBtn').addEventListener('click', function () {
                 modal.style.visibility = 'hidden';
                 modal.style.opacity = '0';
-                setTimeout(() => modal.style.display = 'none', 200); // Затримка для анімації
+                setTimeout(() => modal.style.display = 'none', 200);  
             });
 
-            // Закриття модального вікна при зміні розміру вікна або скролі
+           
             window.addEventListener('resize', closeModalOnWindowChange);
             window.addEventListener('scroll', closeModalOnWindowChange);
 
@@ -301,7 +301,7 @@
                 if (modal.style.display === 'block') {
                     modal.style.visibility = 'hidden';
                     modal.style.opacity = '0';
-                    setTimeout(() => modal.style.display = 'none', 200); // Затримка для анімації
+                    setTimeout(() => modal.style.display = 'none', 200);  
                 }
             }
         });
@@ -311,37 +311,37 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).on('click', '.edit-icon', function () {
-            var taskId = $(this).attr('data-group-task-id'); // Отримуємо taskId
-            // console.log("taskId (before AJAX):", taskId);
+            var taskId = $(this).attr('data-group-task-id');  
+         
 
-            var taskTitleElement = $('#task-title-' + taskId); // Отримуємо заголовок задачі
+            var taskTitleElement = $('#task-title-' + taskId);  
 
             if (taskTitleElement.length === 0) {
-                console.log("Помилка: елемент taskTitleElement не знайдено!");
+                console.log("Error: taskTitleElement not found!");
                 return;
             }
 
-            var currentTitle = taskTitleElement.text().trim(); // Отримуємо поточний текст
+            var currentTitle = taskTitleElement.text().trim();  
             var inputField = $('<input>', {
                 type: 'text',
                 value: currentTitle,
                 class: 'task-input'
             });
 
-            taskTitleElement.empty().append(inputField); // Замінюємо текст на input
-            inputField.focus(); // Фокусуємо поле
+            taskTitleElement.empty().append(inputField);  
+            inputField.focus();  
 
-            // Переміщення курсора в кінець тексту
+          
             var tempValue = inputField.val();
             inputField.val('').val(tempValue);
 
-            // Обробка події втрати фокусу
+          
             inputField.on('blur', function () {
                 var updatedTitle = inputField.val().trim();
                 console.log("Updated Title:", updatedTitle);
 
                 if (updatedTitle === currentTitle || updatedTitle === "") {
-                    taskTitleElement.text(currentTitle); // Якщо нічого не змінилося - повертаємо назад
+                    taskTitleElement.text(currentTitle); 
                     return;
                 }
 
@@ -352,33 +352,33 @@
                     data: JSON.stringify({ taskId: taskId, newTitle: updatedTitle }),
                     success: function (response) {
                         console.log("Server Response:", response);
-                        if (response.success) { // Правильна перевірка success
-                            taskTitleElement.text(updatedTitle); // Оновлюємо текст у DOM
+                        if (response.success) {  
+                            taskTitleElement.text(updatedTitle);  
                         } else {
-                            taskTitleElement.text(currentTitle); // Якщо помилка, повертаємо старе значення
+                            taskTitleElement.text(currentTitle);  
                         }
                     },
                     error: function (xhr, status, error) {
                         console.log("AJAX Error:", error);
-                        taskTitleElement.text(currentTitle); // Повертаємо старий текст при помилці
+                        taskTitleElement.text(currentTitle);  
                     }
                 });
             });
 
-            // Обробка натискання Enter
+          
             inputField.on('keypress', function (e) {
-                if (e.which === 13) {  // Enter key
+                if (e.which === 13) {   
                     $(this).blur();
                 }
             });
         });
         $('.cbx input[type="checkbox"]').on('change', function () {
             var taskId = $(this).data('group-task-id');
-            var isChecked = $(this).prop('checked'); // Отримуємо новий статус чекбоксу
+            var isChecked = $(this).prop('checked');  
 
-            console.log("taskId:", taskId, "Is Completed:", isChecked); // Логуємо значення перед відправкою
+            console.log("taskId:", taskId, "Is Completed:", isChecked);  
 
-            // Відправка AJAX запиту для оновлення статусу
+             
             $.ajax({
                 url: '@Url.Action("UpdateGroupTaskCompletion", "ToDoList")',
                 method: 'POST',
@@ -390,32 +390,30 @@
                 success: function (data) {
                     console.log("Server Response:", data);
                     if (data.result === "success") {
-                        // Статус успішно оновлений
-                        console.log("Task completion updated.");
+                         console.log("Task completion updated.");
                     } else {
-                        // Відновити попередній статус, якщо сталася помилка
-                        $(this).prop('checked', !isChecked);
+                         $(this).prop('checked', !isChecked);
                     }
                 },
                 error: function (xhr, status, error) {
                     console.log("AJAX Error:", error);
-                    $(this).prop('checked', !isChecked); // Відновити попередній статус у разі помилки
+                    $(this).prop('checked', !isChecked);  
                 }
             });
         });
         $(document).on("click", ".delete-icon", function () {
             let taskId = $(this).data("group-task-id");
-            let taskElement = $(this).closest(".task-container"); // Знайти контейнер завдання
+            let taskElement = $(this).closest(".task-container"); 
 
             $.ajax({
                 url: "/ToDoList/DeleteGroupTask",
                 type: "POST",
-                contentType: "application/json", // Встановлюємо правильний content type
-                data: JSON.stringify({ taskId: taskId }), // Відправляємо JSON-формат
+                contentType: "application/json",  
+                data: JSON.stringify({ taskId: taskId }),  
                 success: function (response) {
                     if (response.success) {
                         console.log("Task deleted successfully!");
-                        taskElement.fadeOut(150, function () { $(this).remove(); }); // Плавне видалення
+                        taskElement.fadeOut(150, function () { $(this).remove(); }); 
                     }
                 },
                 error: function (xhr, status, error) {
@@ -428,16 +426,16 @@
             var $button = $(this);
             var $userList = $("#users-list");
 
-            // Вимикаємо кнопку на час анімації
+            
             $button.prop("disabled", true);
 
-            // Виконуємо анімацію
+           
             $userList.slideToggle(300, function () {
-                // Після завершення анімації оновлюємо текст кнопки
+              
                 var isVisible = $userList.is(":visible");
                 $button.text(isVisible ? "Hide Users" : "Show Users");
 
-                // Увімкнення кнопки після завершення анімації
+              
                 $button.prop("disabled", false);
             });
         });

@@ -3,8 +3,8 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 @{
-    var user = await UserManager.GetUserAsync(User);  // Отримуємо поточного користувача
-    var fullName = user?.FullName;  // Доступ до повного імені
+    var user = await UserManager.GetUserAsync(User);   
+    var fullName = user?.FullName;  
     var Useremail = user?.Email;
     var userid = user?.Id;
     var avatarurl = user?.AvatarUrl;
@@ -68,7 +68,7 @@
             </div>
         </div>
     </div>
-    <div id="overlay" class="overlay"></div> <!-- Елемент для затемнення -->
+    <div id="overlay" class="overlay"></div>  
     <form class="group-form" method="post" action="/ToDoList/CreateGroup" id="GrpupForm">
         <h2>Group Form</h2>
         <label for="GroupName"> Name</label>
@@ -130,7 +130,7 @@
 
                 </div>
                 <div id="tasksftmgr">
-                    <div class="task-container">
+                   @*  <div class="task-container">
                         <div class="content-taskfrm">
                             <p class="task-text">222222222222222222222222222222222222222222222222222222222222222222222222222222222222222</p>
                             <div class="taskgrft-footer ">
@@ -145,7 +145,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> *@
                 </div>
                
             </div>
@@ -170,12 +170,12 @@
                 type: "POST",
                 data: { groupId: groupId },
                 success: function (response) {
-                    alert("Групу успішно видалено!");
+                    alert(" Group successfully deleted!");
                     location.reload();  
                 },
                 error: function (xhr, status, error) {
-                    console.error("Помилка видалення:", error);
-                    alert("Не вдалося видалити групу.");
+                    console.error("Delete error:", error);
+                    alert("Failed to delete group.");
                 }
             });
         }
@@ -187,36 +187,25 @@
             var Overlay = document.getElementById('overlay');
             var inviteuser = document.getElementById('invite-user');
 
-            // Показуємо форму при натисканні на кнопку "Create Group"
-            document.getElementById('CreateGroupBut').addEventListener('click', function () {
+             document.getElementById('CreateGroupBut').addEventListener('click', function () {
                 GroupElement.classList.add('show');
                 Overlay.classList.add('show');
             });
 
-            // Закриваємо форму при натисканні на кнопку Cancel
-            document.getElementById('cancelBtnGrpup').addEventListener('click', function (event) {
-                event.preventDefault(); // Запобігає стандартній поведінці
+             document.getElementById('cancelBtnGrpup').addEventListener('click', function (event) {
+                event.preventDefault();  
                 GroupElement.classList.remove('show');
                 Overlay.classList.remove('show');
             });
 
-            // Закриваємо форму при натисканні на Overlay
-            Overlay.addEventListener('click', function () {
+             Overlay.addEventListener('click', function () {
                 GroupElement.classList.remove('show');
                 Overlay.classList.remove('show');
-                // document.getElementById('suggestions').classList.toggle('show');
-                // inviteuser.classList.toggle('visible');
+                
             });
         
 
-            // Відображення блоку "Invite User"
-            // document.getElementById('invite-groupformt').addEventListener('click', function () {
-            //     inviteuser.classList.toggle('visible'); // Переключає клас
-            // });
-        
-            // document.getElementById('searchfriendsInput').addEventListener('focus', function () {
-            //     document.getElementById('suggestions').classList.toggle('show');
-            // });
+           
 
         });
      
@@ -229,48 +218,44 @@
       $(document).on('input', '#searchfriendsInput', function () {
     var query = $(this).val();
 
-    // Only start showing suggestions if the query is long enough (3 or more characters)
-    if (query.length >= 3) {
+     if (query.length >= 3) {
         console.log("User is typing...");
         $.ajax({
-            url: '/ToDoList/GetSuggestions',  // Set the correct controller action
+            url: '/ToDoList/GetSuggestions',   
             data: { term: query },
             type: 'GET',
             success: function (data) {
-                console.log(data); // Log data for debugging purposes
+                console.log(data);  
 
                 var suggestionsDiv = $("#suggestions");
-                suggestionsDiv.empty(); // Clear previous suggestions
+                suggestionsDiv.empty(); 
 
                 if (data.length > 0) {
                     suggestionsDiv.show();
                     data.forEach(function (item) {
                         suggestionsDiv.append(
                                  `<div class="suggestion-item" data-userid="${item.friendId}" data-avatarurl="${item.avatarUrl}">
-                                      <img src="${item.avatarUrl}" alt="User Image">  <!-- Використовуємо AvatarUrl -->
+                                      <img src="${item.avatarUrl}" alt="User Image">   
                                       <span>${item.fullName}</span>
                                 </div>`
                                 );
                             });
                         } else {
-                            // If no suggestions, hide the suggestions container
-                            suggestionsDiv.hide();
+                             suggestionsDiv.hide();
                         }
                     },
                     error: function (xhr, status, error) {
                         console.error("Error fetching suggestions:", error);
-                        $("#suggestions").hide(); // Hide suggestions in case of an error
+                        $("#suggestions").hide();  
                     }
                 });
             } else {
-                // Hide suggestions if query is too short
-                $("#suggestions").hide();
+                 $("#suggestions").hide();
             }
         });
 
-        // When a suggestion is clicked, fill the input field with the selected suggestion
-        $(document).on("click", ".suggestion-item", function () {
-            $("#suggestions").hide();  // Hide the suggestions list after selection
+         $(document).on("click", ".suggestion-item", function () {
+            $("#suggestions").hide();   
         });
         
         $(document).on("click", ".suggestion-item", function () {
@@ -278,7 +263,7 @@
             var invitedUsers = $("#invited-users");
             var toggleBtn = $(".toggle-invited");
             var userName = $(this).find("span").text();
-            var userId = $(this).data("userid");  // Get the FriendId from the data attribute
+            var userId = $(this).data("userid");   
         
             if (invitedUsers.find(`.invited-user:contains(${userName})`).length === 0) {
                 invitedUsers.append(
@@ -300,12 +285,11 @@
         $(document).on("click", ".toggle-btn", function () {
             let invitedUsers = $("#invited-users");
 
-            if (invitedUsers.is(":animated")) return; // Запобігаємо багаторазовим клікам
+            if (invitedUsers.is(":animated")) return;  
 
             invitedUsers.slideToggle(300);
 
-            // Обертаємо тільки значок ☰
-            $(this).find(".toggle-icon").toggleClass("rotated");
+             $(this).find(".toggle-icon").toggleClass("rotated");
         });
         $(document).on("click", "#add-groupformt", function () {
             $(".allfrm-tasksdiv").slideToggle(300);
@@ -329,8 +313,7 @@
             var taskTextElement = $(this).closest(".content-taskfrm").find(".task-text");
             var taskText = taskTextElement.text().trim();
 
-            // Якщо інпут уже є, не створюємо його повторно
-            if (taskTextElement.find("input").length === 0) {
+             if (taskTextElement.find("input").length === 0) {
                 var input = $('<input type="text" />').val(taskText);
 
                 taskTextElement.empty().append(input);
@@ -339,7 +322,7 @@
                 input.on('blur keypress', function (e) {
                     if (e.type === 'blur' || e.key === 'Enter') {
                         var updatedText = input.val().trim();
-                        taskTextElement.text(updatedText || taskText); // Якщо порожньо, залишаємо старий текст
+                        taskTextElement.text(updatedText || taskText);  
                     }
                 });
             }
@@ -368,12 +351,10 @@
             const deleteIconSrc = "/media/trash-plus-alt-svgrepo-com (1).svg";
             const editIconSrc = "/media/edit-2-svgrepo-com (1).svg";
 
-            // Встановлюємо мінімальну дату (сьогоднішній день)
-            const today = new Date().toISOString().split('T')[0];
+             const today = new Date().toISOString().split('T')[0];
             datePicker.setAttribute('min', today);
 
-            // Відкриваємо модальне вікно при натисканні "Add Task"
-            targetElement.addEventListener('click', function () {
+             targetElement.addEventListener('click', function () {
                 modal.style.display = 'block';
                 setTimeout(() => {
                     modal.style.visibility = 'visible';
@@ -381,15 +362,13 @@
                 }, 10);
             });
 
-            // Закриваємо модальне вікно, якщо клікнули поза ним
-            document.addEventListener('click', function (event) {
+             document.addEventListener('click', function (event) {
                 if (!modal.contains(event.target) && event.target !== targetElement) {
                     closeModal();
                 }
             });
 
-            // Кнопка збереження дати
-            saveDateBtn.addEventListener('click', function (event) {
+             saveDateBtn.addEventListener('click', function (event) {
                 event.preventDefault();
 
                 const selectedDate = datePicker.value;
@@ -398,16 +377,14 @@
                     return;
                 }
 
-                // Форматуємо дату у формат DD.MM.YYYY
-                const formattedDate = formatDate(selectedDate);
+                 const formattedDate = formatDate(selectedDate);
 
                 dueDateInput.value = formattedDate;
-                addTask(formattedDate); // Передаємо відформатовану дату
+                addTask(formattedDate);  
                 closeModal();
             });
 
-            // Кнопка скасування
-            document.getElementById('cancelBtn').addEventListener('click', function () {
+             document.getElementById('cancelBtn').addEventListener('click', function () {
                 closeModal();
             });
 
@@ -433,7 +410,7 @@
                             <p class="task-text">${inputValue}</p>
                             <div class="taskgrft-footer">
                                 <div class="datetskfrm-container">${dateDisplay}</div>
-                                <input type="hidden" class="task-due-date" value="${formattedDate}"> <!-- Додаємо прихований інпут з датою -->
+                                <input type="hidden" class="task-due-date" value="${formattedDate}">  
                                 <div class="taskgrft-icons">
                                     <img src="${deleteIconSrc}" alt="Delete" class="delete-icon">
                                     <img src="${editIconSrc}" alt="Edit" class="edit-icon">
@@ -443,16 +420,14 @@
                     </div>
                 `;
 
-                // Очищуємо поле після додавання
-                taskInput.value = '';
+                 taskInput.value = '';
                 dueDateInput.value = '';
-                datePicker.value = ''; // Очищаємо вибір дати
+                datePicker.value = '';  
             }
 
-            // Функція для форматування дати у формат DD.MM.YYYY
-            function formatDate(dateString) {
-                const dateParts = dateString.split('-'); // Розбиваємо YYYY-MM-DD
-                return `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}`; // Формуємо DD.MM.YYYY
+             function formatDate(dateString) {
+                const dateParts = dateString.split('-');  
+                return `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}`; 
             }
         });
             
@@ -460,49 +435,45 @@
     <script>
       $(document).ready(function () {
        $(document).on("submit", "#GrpupForm", function (event) {
-           event.preventDefault(); // Запобігаємо стандартному сабміту форми
+           event.preventDefault();  
    
-           // Перевіряємо, чи форма є на сторінці
-           if ($("#GrpupForm").length === 0) {
-               console.error("Форма не знайдена!");
+            if ($("#GrpupForm").length === 0) {
+                    console.error("Form not found!");
                return;
            }
    
-           // Отримуємо значення для CreatedDate
-           var createdDate = $("#CreatedDate").val();
+            var createdDate = $("#CreatedDate").val();
    
-           // Перевіряємо, чи це дійсна дата
-           var validDate = new Date(createdDate);
+            var validDate = new Date(createdDate);
            if (isNaN(validDate.getTime())) {
-               console.error("Невірний формат дати:", createdDate);
-               alert("Будь ласка, введіть коректну дату!");
+                    console.error("Invalid date format:", createdDate);
+                    alert(" Please enter the correct date!");
                return;
            }
    
            var groupData = {
                Name: $("#name").val(),
                Description: $("#groupdescription").val(),
-               CreatedDate: validDate.toISOString(), // Перетворюємо в ISO формат
+               CreatedDate: validDate.toISOString(),  
                GroupTasks: [],
-               GroupMembers: [] // Сюди будуть додаватися ID користувачів
+               GroupMembers: []  
            };
    
             $("#tasksftmgr").find(".task-container").each(function () {
             var taskTitle = $(this).find(".task-text").text();
-            var dueDate = $(this).find(".task-due-date").val();  // Отримуємо значення з прихованого інпуту
+            var dueDate = $(this).find(".task-due-date").val();   
             var taskDescription = $(this).find(".task-description").text();
-            var isCompleted = $(this).find(".task-checkbox").prop("checked"); // Якщо є чекбокс виконання
-            var userId = $(this).data("userid"); // Якщо кожне завдання прив'язане до юзера
-            var projectId = $(this).data("projectid"); // Якщо кожне завдання належить до проекту
+            var isCompleted = $(this).find(".task-checkbox").prop("checked"); 
+            var userId = $(this).data("userid");  
+            var projectId = $(this).data("projectid"); 
       
-        // Перевіряємо, чи є заголовок завдання
+       
             if (taskTitle.trim() !== "") {
-                // Перевірка на коректність дати
-                var formattedDueDate = null;
+                 var formattedDueDate = null;
                 if (dueDate) {
                     var parsedDate = new Date(dueDate);
-                    if (!isNaN(parsedDate.getTime())) {  // Перевіряємо, чи є валідне значення дати
-                        formattedDueDate = parsedDate.toISOString();  // Перетворюємо дату у формат ISO
+                    if (!isNaN(parsedDate.getTime())) {  
+                        formattedDueDate = parsedDate.toISOString();   
                     } else {
                         console.error("Invalid date:", dueDate);
                     }
@@ -511,17 +482,17 @@
              groupData.GroupTasks.push({
                  Title: taskTitle,
                  Description: taskDescription || null,
-                 DueDate: formattedDueDate,  // Використовуємо перевірену дату
+                 DueDate: formattedDueDate,   
                  IsCompleted: isCompleted || false,
                  UserId: userId || null,
                  ProjectId: projectId || null,
-                 GroupTaskId: null // Цей ID заповниться на сервері
+                 GroupTaskId: null  
              });
     }
 });
 
    
-           // Динамічно додані учасники
+          
            $("#invited-users").find(".invited-user").each(function () {
                var userId = $(this).data("userid");
                if (userId) {
@@ -531,7 +502,7 @@
                }
            });
    
-           // Відправляємо AJAX-запит
+           
                 var fileInput = $("#avatarInputgrp")[0].files[0];
                 $.ajax({
                     url: "/ToDoList/CreateGroup",
@@ -541,19 +512,19 @@
                     success: function (response) {
                         alert("Group successfully created!");
 
-                        // Get the created group's ID
+                     
                         var groupId = response.groupId;
 
-                        // Send file if present
+                       
                         var formData = new FormData();
                         formData.append("groupId", groupId);
 
-                        // If there is a file, append it to FormData
+                        
                         if (fileInput) {
                             formData.append("file", fileInput);
                         } else {
-                            // If no file, append a null or empty file indicator
-                            formData.append("file", null);  // You can also omit this line if the backend can handle null as default
+                         
+                            formData.append("file", null);   
                         }
 
                         $.ajax({

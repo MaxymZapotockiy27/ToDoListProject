@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using ToDoListProj.Models;
 using ToDoListProj.Services;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Shared;
 
 
 namespace ToDoListProj.Areas.Identity.Pages.Account
@@ -70,6 +71,8 @@ namespace ToDoListProj.Areas.Identity.Pages.Account
 
         public string AvatarUrl { get; set; }
 
+        public string StatusMessage { get; set; }
+
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -103,8 +106,10 @@ namespace ToDoListProj.Areas.Identity.Pages.Account
 
             [Required]
             [Display(Name = "Full Name")]
-            public string FullName { get; set; }  // Додано поле для FullName
+            public string FullName { get; set; }   
             public string AvatarUrl { get; set; }
+        
+
 
         }
 
@@ -113,7 +118,7 @@ namespace ToDoListProj.Areas.Identity.Pages.Account
         public async Task OnGetAsync(string returnUrl = null)
         {
 
-            ReturnUrl = returnUrl ?? Url.Content("~/"); // Якщо returnUrl не передано, використовуємо головну сторінку
+            ReturnUrl = returnUrl ?? Url.Content("~/");  
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
@@ -125,36 +130,56 @@ namespace ToDoListProj.Areas.Identity.Pages.Account
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
-            if (ModelState.IsValid)
+             var existingUser = await _userManager.FindByEmailAsync(Input.Email);
+            if (existingUser != null)
             {
-                var user = CreateUser();
-                user.FullName = Input.FullName;
-                user.AvatarUrl = Input.AvatarUrl;
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                await _userManager.SetEmailAsync(user, Input.Email);
-
-                var result = await _userManager.CreateAsync(user, Input.Password);
-
-                if (result.Succeeded)
+                if (!existingUser.EmailConfirmed)
                 {
-                    _logger.LogInformation("User created a new account with password.");
+                     await SendEmail(existingUser.Id, Input.Email);
+                    StatusMessage = "Email ще не підтверджено. Новий код підтвердження надіслано на вашу пошту.";
 
-                    var userId = await _userManager.GetUserIdAsync(user);
-                    await SendEmail(userId, Input.Email);
-
-                    // Виконати редирект, щоб уникнути повторного відправлення форми
-                    return RedirectToPage("ConfirmEmail", new { userId = userId, email = user.Email });
+                     return RedirectToPage("ConfirmEmail", new { userId = existingUser.Id, email = existingUser.Email });
                 }
-
-                foreach (var error in result.Errors)
+                else
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                     StatusMessage = "Цей email вже в використанні.";
+                    return Page();
                 }
             }
 
-       
+             if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
+             var newUser = CreateUser();
+            newUser.FullName = Input.FullName;
+            newUser.AvatarUrl = Input.AvatarUrl;
+            await _userStore.SetUserNameAsync(newUser, Input.Email, CancellationToken.None);
+            await _userManager.SetEmailAsync(newUser, Input.Email);
+
+            var result = await _userManager.CreateAsync(newUser, Input.Password);
+
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("User created a new account with password.");
+
+                var userId = await _userManager.GetUserIdAsync(newUser);
+                await SendEmail(userId, Input.Email);
+
+                 return RedirectToPage("ConfirmEmail", new { userId = userId, email = newUser.Email });
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
             return Page();
         }
+
+
+
 
 
 
@@ -178,7 +203,7 @@ namespace ToDoListProj.Areas.Identity.Pages.Account
             await _redisService.SetCodeAsync(userId, code);  // Store the code in Redis
 
             var fromMail = "todolisttodolist43@gmail.com";
-            var fromPassword = "gzrolgsmvosxowfw";
+            var fromPassword = "xmeo nmwe kxae pawr";
 
             try
             {

@@ -31,8 +31,8 @@ namespace ToDoListProj.Controllers
         [HttpPost]
         public IActionResult SubmitForm(string friendId)
         {
-            TempData["FriendId"] = friendId; // Збереження у TempData
-            return View(); // Перенаправлення
+            TempData["FriendId"] = friendId;  
+            return View();  
         }
 
     }

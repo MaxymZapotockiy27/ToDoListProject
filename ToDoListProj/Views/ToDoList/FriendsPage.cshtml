@@ -1,6 +1,6 @@
 ﻿@{
-    var user = await UserManager.GetUserAsync(User);  // Отримуємо поточного користувача
-    var fullName = user?.FullName;  // Доступ до повного імені
+    var user = await UserManager.GetUserAsync(User);   
+    var fullName = user?.FullName;   
     var Useremail = user?.Email;
     var userid = user?.Id;
     var userimg = user.AvatarUrl;
@@ -48,7 +48,7 @@
                 }
                 else
                 {
-                    <p class="color94"> No friends found.</p> <!-- Вивести повідомлення, якщо немає друзів -->
+                    <p class="color94"> No friends found.</p>  
                 }
 
 

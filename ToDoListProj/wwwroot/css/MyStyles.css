@@ -3399,3 +3399,17 @@ nav {
     .ch2-add-friend-form textarea:focus {
         outline: none;
     }
+ .task-container {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+    .task-container.hidden {
+        opacity: 0;
+        pointer-events: none; 
+    }
+
+.menu-items:hover{
+    cursor:pointer;
+
+}
